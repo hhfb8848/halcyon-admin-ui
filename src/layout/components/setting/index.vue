@@ -447,7 +447,7 @@ onUnmounted(() => removeMatchMedia);
         @change="onChange"
       />
 
-       <el-divider>界面显示</el-divider>
+      <el-divider>界面显示</el-divider>
       <ul class="setting">
         <li>
           <span class="dark:text-white">灰色模式</span>
@@ -525,13 +525,13 @@ onUnmounted(() => removeMatchMedia);
 :deep(.el-switch__core) {
   --el-switch-off-color: var(--pure-switch-off-color);
 
-  min-width: 36px;
-  height: 18px;
+  // min-width: 36px;
+  // height: 20px;
 }
 
-:deep(.el-switch__core .el-switch__action) {
-  height: 14px;
-}
+// :deep(.el-switch__core .el-switch__action) {
+//   height: 14px;
+// }
 
 .theme-color {
   height: 20px;
@@ -622,12 +622,13 @@ onUnmounted(() => removeMatchMedia);
 }
 
 .setting {
+  width: 100%;
+
   li {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 3px 0;
-    font-size: 14px;
+    align-items: center;
+    margin: 15px 0;
   }
 }
 </style>
