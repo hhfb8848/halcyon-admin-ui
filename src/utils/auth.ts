@@ -42,18 +42,12 @@ export function getToken(): any {
  */
 export function setToken(data: DataInfo<Date>) {
   console.log("data是", data);
-  let expires  = 0
   const { accessToken, refreshToken } = data;
   const { isRemembered, loginDay } = useUserStoreHook();
   Cookies.set(TokenKey, accessToken);
   Cookies.set(
     multipleTabsKey,
-    "true",
-    isRemembered
-      ? {
-          expires: loginDay
-        }
-      : {}
+    "true"
   );
 
   function setUserKey({ avatar, username, nickname, roles }) {
@@ -63,7 +57,6 @@ export function setToken(data: DataInfo<Date>) {
     useUserStoreHook().SET_ROLES(roles);
     storageLocal().setItem(userKey, {
       refreshToken,
-      expires,
       avatar,
       username,
       nickname,
