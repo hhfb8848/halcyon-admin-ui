@@ -13,7 +13,7 @@ import { stringify } from "qs";
 import NProgress from "../progress";
 import { getToken, formatToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
-
+import { message as messageEl } from "@/utils/message";
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
   // 请求超时时间
@@ -99,9 +99,7 @@ class PureHttp {
                   }
                   resolve(PureHttp.retryOriginalRequest(config));
                 } else {
-                  config.headers["Authorization"] = formatToken(
-                    data.accessToken
-                  );
+                  config.headers["Authorization"] = data;
                   resolve(config);
                 }
               } else {
@@ -136,6 +134,13 @@ class PureHttp {
       },
       (error: PureHttpError) => {
         const $error = error;
+        let { message } = error;
+        if (message == "Network Error") {
+          message = "后端接口连接异常";
+        } else if (message.includes("timeout")) {
+          message = "系统接口请求超时";
+        }
+        messageEl(message, { type: "error" });
         $error.isCancelRequest = Axios.isCancel($error);
         // 关闭进度条动画
         NProgress.done();
@@ -163,7 +168,17 @@ class PureHttp {
     return new Promise((resolve, reject) => {
       PureHttp.axiosInstance
         .request(config)
-        .then((response: undefined) => {
+        .then((response: any) => {
+          if (response) {
+            switch (response.code) {
+              case "H800":
+                useUserStoreHook().logOut();
+                messageEl(response.message, { type: "error" });
+                break;
+              default:
+                break;
+            }
+          }
           resolve(response);
         })
         .catch(error => {

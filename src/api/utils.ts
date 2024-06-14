@@ -1,1 +1,1 @@
-export const baseUrlApi = (url: string) => `/admin/${url}`;
+export const baseUrlApi = (url: string) => `/admin${url}`;

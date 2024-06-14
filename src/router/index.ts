@@ -159,6 +159,7 @@ router.beforeEach((to: ToRouteType, _from, next) => {
               router.options.routes[0].children
             );
             getTopMenu(true);
+            console.log("routers", usePermissionStoreHook().wholeMenus);
             // query、params模式路由传参数的标签页不在此处处理
             if (route && route.meta?.title) {
               if (isAllEmpty(route.parentId) && route.meta?.backstage) {

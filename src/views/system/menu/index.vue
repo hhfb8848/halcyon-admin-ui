@@ -69,9 +69,9 @@ const {
         <el-button
           type="primary"
           :icon="useRenderIcon(AddFill)"
-          @click="openDialog()"
+          @click="openDialog('新增', {})"
         >
-          新增菜单
+          新增
         </el-button>
       </template>
       <template v-slot="{ size, dynamicColumns }">

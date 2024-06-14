@@ -1,13 +1,13 @@
 interface FormItemProps {
-  /** 菜单类型（0代表菜单、1代表iframe、2代表外链、3代表按钮）*/
-  menuType: number;
+  /** 菜单类型（0代表目录、1代表菜单、2代表iframe、3代表外链、4代表按钮）*/
+  type: number;
   higherMenuOptions: Record<string, unknown>[];
   parentId: number;
   title: string;
   name: string;
   path: string;
   component: string;
-  rank: number;
+  orderNum: number;
   redirect: string;
   icon: string;
   extraIcon: string;
@@ -16,11 +16,11 @@ interface FormItemProps {
   activePath: string;
   auths: string;
   frameSrc: string;
-  frameLoading: boolean;
-  keepAlive: boolean;
+  frameLoading: number;
+  keepAlive: number;
   hiddenTag: boolean;
   fixedTag: boolean;
-  showLink: boolean;
+  visible: number;
   showParent: boolean;
 }
 interface FormProps {
