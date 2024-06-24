@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<FormProps>(), {
     name: "",
     path: "",
     component: "",
-    orderNum: 1,
+    sortOrder: 1,
     redirect: "",
     icon: "",
     extraIcon: "",
@@ -36,7 +36,7 @@ const props = withDefaults(defineProps<FormProps>(), {
     auths: "",
     frameSrc: "",
     frameLoading: 0,
-    keepAlive: 0,
+    cacheFlag: 0,
     hiddenTag: false,
     fixedTag: false,
     visible: 0,
@@ -51,6 +51,7 @@ function getRef() {
 }
 function menuTypeChange({ index, option }) {
   const { label, value } = option;
+  console.log("option",option);
   switch (value) {
     // 目录
     case 0:
@@ -115,7 +116,7 @@ defineExpose({ getRef });
             }"
             clearable
             filterable
-            placeholder="请选择上级菜单："
+            placeholder="请选择上级菜单（不选则为顶级菜单）"
           >
             <template #default="{ node, data }">
               <span>{{ data.title }}</span>
@@ -154,7 +155,7 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
       <re-col v-if="newFormInline.type === 1" :value="12" :xs="24" :sm="24">
-        <el-form-item label="组件路径："  prop="component">
+        <el-form-item label="组件路径：" prop="component">
           <el-input
             v-model="newFormInline.component"
             clearable
@@ -166,7 +167,7 @@ defineExpose({ getRef });
       <re-col :value="12" :xs="24" :sm="24">
         <el-form-item label="菜单排序：">
           <el-input-number
-            v-model="newFormInline.orderNum"
+            v-model="newFormInline.sortOrder"
             class="!w-full"
             :min="1"
             :max="9999"
@@ -190,22 +191,6 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
 
-      <re-col v-if="newFormInline.type === 1" :value="12" :xs="24" :sm="24">
-        <el-form-item label="进场动画：">
-          <ReAnimateSelector
-            v-model="newFormInline.enterTransition"
-            placeholder="请选择页面进场加载动画"
-          />
-        </el-form-item>
-      </re-col>
-      <re-col v-if="newFormInline.type === 1" :value="12" :xs="24" :sm="24">
-        <el-form-item label="离场动画：">
-          <ReAnimateSelector
-            v-model="newFormInline.leaveTransition"
-            placeholder="请选择页面离场加载动画"
-          />
-        </el-form-item>
-      </re-col>
       <re-col v-if="newFormInline.type === 4" :value="12" :xs="24" :sm="24">
         <!-- 按钮级别权限设置 -->
         <el-form-item label="权限标识：" prop="auths">
@@ -230,11 +215,11 @@ defineExpose({ getRef });
       <re-col v-if="newFormInline.type === 2" :value="12" :xs="24" :sm="24">
         <el-form-item label="加载动画：">
           <Segmented
-            :modelValue="newFormInline.frameLoading ? 0 : 1"
+            :modelValue="newFormInline.frameLoading"
             :options="frameLoadingOptions"
             @change="
               ({ option: { value } }) => {
-                newFormInline.frameLoading = value;
+                newFormInline.frameLoading = Number(value);
               }
             "
           />
@@ -258,11 +243,11 @@ defineExpose({ getRef });
       <re-col v-if="newFormInline.type === 1" :value="12" :xs="24" :sm="24">
         <el-form-item label="缓存页面：">
           <Segmented
-            :modelValue="newFormInline.keepAlive"
+            :modelValue="newFormInline.cacheFlag"
             :options="keepAliveOptions"
             @change="
               ({ option: { value } }) => {
-                newFormInline.keepAlive = value;
+                newFormInline.cacheFlag = Number(value);
               }
             "
           />

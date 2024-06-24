@@ -6,6 +6,7 @@ import { reactive, ref, onMounted, h } from "vue";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { cloneDeep, isAllEmpty, deviceDetection } from "@pureadmin/utils";
 import { addMenu, listMenu, updateMenu } from "@/api/menu";
+import { menuTypeOptions } from "./enums";
 export function useMenu() {
   const form = reactive({
     title: ""
@@ -77,7 +78,7 @@ export function useMenu() {
     },
     {
       label: "排序",
-      prop: "orderNum",
+      prop: "sortOrder",
       width: 100
     },
     {
@@ -136,6 +137,13 @@ export function useMenu() {
   }
 
   async function openDialog(title = "新增", row) {
+    menuTypeOptions.forEach(option => {
+      option.disabled =
+        row?.type === 0 &&
+        row?.children &&
+        row.children.length > 0 &&
+        option.value !== 0;
+    });
     addDialog({
       title: `${title}菜单`,
       props: {
@@ -148,17 +156,15 @@ export function useMenu() {
           name: row?.name ?? "",
           path: row?.path ?? "",
           component: row?.component ?? "",
-          orderNum: row?.rank ?? 1,
+          sortOrder: row?.sortOrder ?? 1,
           redirect: row?.redirect ?? "",
           icon: row?.icon ?? "",
           extraIcon: row?.extraIcon ?? "",
-          enterTransition: row?.enterTransition ?? "",
-          leaveTransition: row?.leaveTransition ?? "",
           activePath: row?.activePath ?? "",
           auths: row?.auths ?? "",
           frameSrc: row?.frameSrc ?? "",
           frameLoading: row?.frameLoading ?? 0,
-          keepAlive: row?.keepAlive ?? 1,
+          cacheFlag: row?.cacheFlag ?? 0,
           visible: row?.visible ?? 0
         }
       },
@@ -172,6 +178,7 @@ export function useMenu() {
       beforeSure: async (done, { options }) => {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline;
+        console.log("options.props.formInline", options.props.formInline);
 
         function chores() {
           message(`${title}菜单：${curData.title}成功`, {
@@ -184,6 +191,7 @@ export function useMenu() {
         FormRef.validate(async valid => {
           if (valid) {
             console.log("curData", curData);
+
             try {
               // 表单规则校验通过
               if (title === "新增") {

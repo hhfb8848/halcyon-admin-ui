@@ -7,7 +7,7 @@ interface FormItemProps {
   name: string;
   path: string;
   component: string;
-  orderNum: number;
+  sortOrder: number;
   redirect: string;
   icon: string;
   extraIcon: string;
@@ -17,7 +17,7 @@ interface FormItemProps {
   auths: string;
   frameSrc: string;
   frameLoading: number;
-  keepAlive: number;
+  cacheFlag: number;
   hiddenTag: boolean;
   fixedTag: boolean;
   visible: number;

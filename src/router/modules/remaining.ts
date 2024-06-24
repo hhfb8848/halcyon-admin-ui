@@ -8,7 +8,7 @@ export default [
     meta: {
       title: "登录",
       showLink: false,
-      rank: 101
+      sortOrder: 101
     }
   },
   {
@@ -17,7 +17,7 @@ export default [
     meta: {
       title: "加载中...",
       showLink: false,
-      rank: 102
+      sortOrder: 102
     },
     children: [
       {

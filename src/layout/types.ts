@@ -70,7 +70,7 @@ export type menuType = {
   meta?: {
     icon?: string;
     title?: string;
-    rank?: number;
+    sortOrder?: number;
     showParent?: boolean;
     extraIcon?: string;
   };

@@ -29,11 +29,11 @@ const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 // 动态路由
 import { getAsyncRoutes } from "@/api/routes";
 
-function handRank(routeInfo: any) {
+function handSortOrder(routeInfo: any) {
   const { name, path, parentId, meta } = routeInfo;
   return isAllEmpty(parentId)
-    ? isAllEmpty(meta?.rank) ||
-      (meta?.rank === 0 && name !== "Home" && path !== "/")
+    ? isAllEmpty(meta?.sortOrder) ||
+      (meta?.sortOrder === 0 && name !== "Home" && path !== "/")
       ? true
       : false
     : false;
@@ -43,11 +43,14 @@ function handRank(routeInfo: any) {
 function ascending(arr: any[]) {
   arr.forEach((v, index) => {
     // 当rank不存在时，根据顺序自动创建，首页路由永远在第一位
-    if (handRank(v)) v.meta.rank = index + 2;
+    if (handSortOrder(v)) v.meta.sortOrder = index + 2;
   });
   return arr.sort(
-    (a: { meta: { rank: number } }, b: { meta: { rank: number } }) => {
-      return a?.meta.rank - b?.meta.rank;
+    (
+      a: { meta: { sortOrder: number } },
+      b: { meta: { sortOrder: number } }
+    ) => {
+      return a?.meta.sortOrder - b?.meta.sortOrder;
     }
   );
 }
@@ -155,12 +158,12 @@ function addPathMatch() {
 
 /** 处理动态路由（后端返回的路由） */
 function handleAsyncRoutes(routeList) {
-  console.log("处理之前的routeList", routeList);
   if (routeList.length === 0) {
     usePermissionStoreHook().handleWholeMenus(routeList);
   } else {
     formatFlatteningRoutes(addAsyncRoutes(routeList)).map(
       (v: RouteRecordRaw) => {
+        console.log("router.options.routes", router.options.routes);
         // 防止重复添加路由
         if (
           router.options.routes[0].children.findIndex(
@@ -181,7 +184,6 @@ function handleAsyncRoutes(routeList) {
         }
       }
     );
-    console.log("routeList是", routeList);
     usePermissionStoreHook().handleWholeMenus(routeList);
   }
   if (!useMultiTagsStoreHook().getMultiTagsCache) {
@@ -197,7 +199,6 @@ function handleAsyncRoutes(routeList) {
 
 /** 初始化路由（`new Promise` 写法防止在异步请求中造成无限循环）*/
 function initRouter() {
-  console.log("不执行吗");
   if (getConfig()?.CachingAsyncRoutes) {
     // 开启动态路由缓存本地localStorage
     const key = "async-routes";
@@ -311,6 +312,7 @@ function handleAliveRoute({ name }: ToRouteType, mode?: string) {
 function addAsyncRoutes(arrRoutes: Array<RouteRecordRaw>) {
   if (!arrRoutes || !arrRoutes.length) return;
   const modulesRoutesKeys = Object.keys(modulesRoutes);
+  console.log("modulesRoutesKeys", modulesRoutesKeys);
   arrRoutes.forEach((v: RouteRecordRaw) => {
     // 将backstage属性加入meta，标识此路由为后端返回路由
     v.meta.backstage = true;
