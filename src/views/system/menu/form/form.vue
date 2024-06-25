@@ -1,21 +1,18 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import ReCol from "@/components/ReCol";
-import { formRules } from "./utils/rule";
-import { FormProps } from "./utils/types";
+import { formRules } from "../utils/rule";
+import { FormProps } from "../utils/types";
 import { IconSelect } from "@/components/ReIcon";
 import Segmented from "@/components/ReSegmented";
 import ReAnimateSelector from "@/components/ReAnimateSelector";
-import { useMenu } from "./utils/hook";
+import { useMenu } from "../utils/hook";
 import {
   menuTypeOptions,
   visibleOptions,
-  fixedTagOptions,
   keepAliveOptions,
-  hiddenTagOptions,
-  showParentOptions,
   frameLoadingOptions
-} from "./utils/enums";
+} from "../utils/enums";
 
 const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
@@ -51,7 +48,7 @@ function getRef() {
 }
 function menuTypeChange({ index, option }) {
   const { label, value } = option;
-  console.log("option",option);
+  console.log("option", option);
   switch (value) {
     // 目录
     case 0:
@@ -136,11 +133,16 @@ defineExpose({ getRef });
         </el-form-item>
       </re-col>
       <re-col v-if="newFormInline.type !== 4" :value="12" :xs="24" :sm="24">
-        <el-form-item label="路由名称：" prop="name">
+        <el-form-item
+          :label="newFormInline.type !== 3 ? '路由名称：' : '外链地址：'"
+          prop="name"
+        >
           <el-input
             v-model="newFormInline.name"
             clearable
-            placeholder="请输入路由名称："
+            :placeholder="
+              newFormInline.type !== 3 ? '请输入路由名称' : '请输入外链地址'
+            "
           />
         </el-form-item>
       </re-col>

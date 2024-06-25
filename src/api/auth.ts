@@ -14,8 +14,3 @@ export const logOut = (data?: object) => {
 export const refreshTokenApi = (data?: object) => {
   return http.request<any>("post", "/refreshToken", { data });
 };
-
-
-
-
-

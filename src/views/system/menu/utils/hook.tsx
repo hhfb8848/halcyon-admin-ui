@@ -1,4 +1,4 @@
-import editForm from "../form.vue";
+import editForm from "../form/form.vue";
 import { handleTree } from "@/utils/tree";
 import { message } from "@/utils/message";
 import { addDialog } from "@/components/ReDialog";
