@@ -157,6 +157,16 @@ const {
               >
                 修改
               </el-button>
+              <el-button
+                class="reset-margin"
+                link
+                type="success"
+                :size="size"
+                :icon="useRenderIcon(Menu)"
+                @click="openDialog('修改', row)"
+              >
+                数据项
+              </el-button>
               <el-popconfirm
                 :title="`是否确认删除名称为${row.name}的这条数据`"
                 @confirm="handleDelete(row)"
@@ -165,7 +175,7 @@ const {
                   <el-button
                     class="reset-margin"
                     link
-                    type="primary"
+                    type="danger"
                     :size="size"
                     :icon="useRenderIcon(Delete)"
                   >

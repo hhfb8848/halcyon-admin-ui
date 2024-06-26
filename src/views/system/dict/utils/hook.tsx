@@ -6,9 +6,8 @@ import { addDialog } from "@/components/ReDialog";
 import type { FormItemProps } from "../utils/types";
 import type { PaginationProps } from "@pureadmin/table";
 import { deviceDetection } from "@pureadmin/utils";
-import { getRoleList } from "@/api/system";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
-
+import { addDict, updateDict, listDict } from "@/api/dict";
 export function useDict() {
   const form = reactive({
     name: "",
@@ -30,16 +29,12 @@ export function useDict() {
   });
   const columns: TableColumnList = [
     {
-      label: "角色编号",
-      prop: "id"
+      label: "字典名称",
+      prop: "dictName"
     },
     {
-      label: "角色名称",
-      prop: "name"
-    },
-    {
-      label: "角色标识",
-      prop: "code"
+      label: "字典编码",
+      prop: "dictCode"
     },
     {
       label: "状态",
@@ -48,20 +43,15 @@ export function useDict() {
           size={scope.props.size === "small" ? "small" : "default"}
           loading={switchLoadMap.value[scope.index]?.loading}
           v-model={scope.row.status}
-          active-value={1}
-          inactive-value={0}
+          active-value={0}
+          inactive-value={1}
           active-text="已启用"
           inactive-text="已停用"
           inline-prompt
           onChange={() => onChange(scope as any)}
         />
       ),
-      minWidth: 90
-    },
-    {
-      label: "备注",
-      prop: "remark",
-      minWidth: 160
+      minWidth: 80
     },
     {
       label: "创建时间",
@@ -71,9 +61,15 @@ export function useDict() {
         dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
+      label: "备注",
+      prop: "remark",
+      minWidth: 160
+    },
+
+    {
       label: "操作",
       fixed: "right",
-      width: 210,
+      width: 220,
       slot: "operation"
     }
   ];
@@ -81,9 +77,9 @@ export function useDict() {
   function onChange({ row, index }) {
     ElMessageBox.confirm(
       `确认要<strong>${
-        row.status === 0 ? "停用" : "启用"
+        row.status === 1 ? "停用" : "启用"
       }</strong><strong style='color:var(--el-color-primary)'>${
-        row.name
+        row.dictName
       }</strong>吗?`,
       "系统提示",
       {
@@ -94,7 +90,7 @@ export function useDict() {
         draggable: true
       }
     )
-      .then(() => {
+      .then(async () => {
         switchLoadMap.value[index] = Object.assign(
           {},
           switchLoadMap.value[index],
@@ -102,7 +98,8 @@ export function useDict() {
             loading: true
           }
         );
-        setTimeout(() => {
+        const res = await updateDict(row);
+        if (res.code == "H200") {
           switchLoadMap.value[index] = Object.assign(
             {},
             switchLoadMap.value[index],
@@ -110,10 +107,13 @@ export function useDict() {
               loading: false
             }
           );
-          message(`已${row.status === 0 ? "停用" : "启用"}${row.name}`, {
+          message(`已${row.status === 1 ? "停用" : "启用"}${row.dictName}`, {
             type: "success"
           });
-        }, 300);
+        } else {
+          message(res.message, { type: "error" });
+        }
+        onSearch();
       })
       .catch(() => {
         row.status === 0 ? (row.status = 1) : (row.status = 0);
@@ -139,12 +139,15 @@ export function useDict() {
 
   async function onSearch() {
     loading.value = true;
-    const { data } = await getRoleList(toRaw(form));
-    dataList.value = data.list;
-    pagination.total = data.total;
-    pagination.pageSize = data.pageSize;
-    pagination.currentPage = data.currentPage;
-
+    const { code, data, message } = await listDict(toRaw(form));
+    if (code != "H200") {
+      message(message, { type: "error" });
+    } else {
+      dataList.value = data.records;
+      pagination.total = data.total;
+      pagination.pageSize = data.size;
+      pagination.currentPage = data.currentPage;
+    }
     setTimeout(() => {
       loading.value = false;
     }, 500);
@@ -161,8 +164,9 @@ export function useDict() {
       title: `${title}字典`,
       props: {
         formInline: {
-          name: row?.name ?? "",
-          code: row?.code ?? "",
+          id: row?.id ?? null,
+          dictName: row?.dictName ?? "",
+          dictCode: row?.dictCode ?? "",
           status: row?.status ?? 0,
           remark: row?.remark ?? ""
         }
@@ -177,22 +181,32 @@ export function useDict() {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
         function chores() {
-          message(`您${title}了字典名称为${curData.name}的这条数据`, {
+          message(`您${title}了字典名称为${curData.dictName}的这条数据`, {
             type: "success"
           });
           done(); // 关闭弹框
           onSearch(); // 刷新表格数据
         }
-        FormRef.validate(valid => {
+        FormRef.validate(async valid => {
           if (valid) {
             console.log("curData", curData);
             // 表单规则校验通过
             if (title === "新增") {
               // 实际开发先调用新增接口，再进行下面操作
-              chores();
+              const res = await addDict(curData);
+              if (res.code == "H200") {
+                chores();
+              } else {
+                message(res.message, { type: "error" });
+              }
             } else {
               // 实际开发先调用修改接口，再进行下面操作
-              chores();
+              const res = await updateDict(curData);
+              if (res.code == "H200") {
+                chores();
+              } else {
+                message(res.message, { type: "error" });
+              }
             }
           }
         });

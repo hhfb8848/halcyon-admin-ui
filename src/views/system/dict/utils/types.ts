@@ -1,10 +1,11 @@
 // 虽然字段很少 但是抽离出来 后续有扩展字段需求就很方便了
 
 interface FormItemProps {
+  id?: number;
   /** 字典名称 */
-  name: string;
+  dictName: string;
   /** 字典编码 */
-  code: string;
+  dictCode: string;
   /** 状态 */
   status: number;
   /** 备注 */

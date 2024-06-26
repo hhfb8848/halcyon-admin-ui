@@ -136,7 +136,7 @@ export function useMenu() {
     return newTreeList;
   }
 
-  async function openDialog(title = "新增", row) {
+  function openDialog(title = "新增", row) {
     menuTypeOptions.forEach(option => {
       option.disabled =
         row?.type === 0 &&
@@ -178,8 +178,6 @@ export function useMenu() {
       beforeSure: async (done, { options }) => {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline;
-        console.log("options.props.formInline", options.props.formInline);
-
         function chores() {
           message(`${title}菜单：${curData.title}成功`, {
             type: "success"
@@ -187,11 +185,9 @@ export function useMenu() {
           done(); // 关闭弹框
           onSearch(); // 刷新表格数据
         }
-
         FormRef.validate(async valid => {
           if (valid) {
             console.log("curData", curData);
-
             try {
               // 表单规则校验通过
               if (title === "新增") {
