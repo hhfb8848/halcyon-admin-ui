@@ -1,14 +1,20 @@
 import dayjs from "dayjs";
-import editForm from "../form/form.vue";
+import editForm from "./form.vue";
 import { message as toast } from "@/utils/message";
+import { ElMessageBox } from "element-plus";
 import { addDialog } from "@/components/ReDialog";
-import { showDialog } from "@/components/HalcyonDialog";
-import type { FormItemProps } from "../utils/types";
+import type { DictDataFormItemProps } from "../utils/types";
 import type { PaginationProps } from "@pureadmin/table";
 import { deviceDetection } from "@pureadmin/utils";
-import { reactive, ref, onMounted, h, toRaw } from "vue";
-import { addDict, updateDict, listDict, deleteDict } from "@/api/dict/dict";
-export function useDict() {
+import { reactive, ref, h, toRaw } from "vue";
+import { showDialog } from "@/components/HalcyonDialog";
+import {
+  addDictData,
+  updateDictData,
+  listDictData,
+  deleteDictData
+} from "@/api/dict/dict-data";
+export function useDictData() {
   const pagination = reactive<PaginationProps>({
     total: 0,
     pageSize: 10,
@@ -16,41 +22,39 @@ export function useDict() {
     background: true
   });
   const form = reactive({
-    dictName: "",
-    dictCode: "",
+    dictId: null,
+    name: "",
+    value: "",
     status: "",
     size: pagination.pageSize,
     current: pagination.currentPage
   });
-  const curRow = ref({ dictName: "" });
+  const curRow = ref();
   const formRef = ref();
+  const tableRef = ref();
   const dataList = ref([]);
   const isShow = ref(false);
   const loading = ref(true);
   const isLinkage = ref(false);
   const switchLoadMap = ref({});
-  // 数据项弹窗
-  const dictDataDrawer = ref(false);
-
+  const selectedNum = ref(0);
   const columns: TableColumnList = [
     {
       label: "勾选列", // 如果需要表格多选，此处label必须设置
       type: "selection",
-      width: 55,
       fixed: "left",
-      align: "center",
       reserveSelection: true // 数据刷新后保留选项
     },
     {
-      label: "字典名称",
-      prop: "dictName",
+      label: "数据项名称",
+      prop: "name",
       width: 200,
       fixed: "left"
     },
     {
-      label: "字典编码",
-      prop: "dictCode",
-      width: 200,
+      label: "数据项值",
+      prop: "value",
+      width: 100,
       fixed: "left"
     },
     {
@@ -71,9 +75,19 @@ export function useDict() {
       minWidth: 80
     },
     {
+      label: "颜色",
+      prop: "color",
+      cellRenderer: scope => (
+        <el-tag color={scope.row.color}>
+          {scope.row.color === "" ? "无" : scope.row.color}
+        </el-tag>
+      ),
+      minWidth: 80
+    },
+    {
       label: "创建时间",
       prop: "createTime",
-      minWidth: 160,
+      minWidth: 100,
       formatter: ({ createTime }) =>
         dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
@@ -86,23 +100,28 @@ export function useDict() {
     {
       label: "操作",
       fixed: "right",
-      width: 220,
+      width: 150,
       slot: "operation"
     }
   ];
 
   function onChange({ row, index }) {
-    showDialog("提示", {
-      contentRenderer: () => (
-        <p style="text-align: center;margin-bottom:20px">
-          确认要{row.status === 1 ? "停用" : "启用"}
-          <strong style="color:var(--el-color-warning);margin:0 5px">
-            {row.dictName}
-          </strong>
-          吗?
-        </p>
-      ),
-      beforeSure: async done => {
+    ElMessageBox.confirm(
+      `确认要<strong>${
+        row.status === 1 ? "停用" : "启用"
+      }</strong><strong style='color:var(--el-color-primary)'>${
+        row.name
+      }</strong>吗?`,
+      "系统提示",
+      {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+        dangerouslyUseHTMLString: true,
+        draggable: true
+      }
+    )
+      .then(async () => {
         switchLoadMap.value[index] = Object.assign(
           {},
           switchLoadMap.value[index],
@@ -110,7 +129,7 @@ export function useDict() {
             loading: true
           }
         );
-        const res = await updateDict(row);
+        const res = await updateDictData(row);
         if (res.code == "H200") {
           switchLoadMap.value[index] = Object.assign(
             {},
@@ -119,21 +138,17 @@ export function useDict() {
               loading: false
             }
           );
-          toast(`已${row.status === 1 ? "停用" : "启用"}${row.dictName}`, {
+          toast(`已${row.status === 1 ? "停用" : "启用"}${row.name}`, {
             type: "success"
           });
         } else {
           toast(res.message, { type: "error" });
         }
-        done(); // 关闭弹框
         onSearch();
-      },
-      closeCallBack: ({ args }) => {
-        if (args?.command !== "sure") {
-          row.status === 0 ? (row.status = 1) : (row.status = 0);
-        }
-      }
-    });
+      })
+      .catch(() => {
+        row.status === 0 ? (row.status = 1) : (row.status = 0);
+      });
   }
 
   function handleDelete(row) {
@@ -142,15 +157,15 @@ export function useDict() {
         <p style="text-align: center;margin-bottom:20px">
           确认要删除
           <strong style="color:var(--el-color-danger);margin:0 5px">
-            {row.dictName}
+            {row.name}
           </strong>
           吗?
         </p>
       ),
       beforeSure: async done => {
-        const res = await deleteDict(row.id);
+        const res = await deleteDictData([row.id]);
         if (res.code == "H200") {
-          toast(`已删除"${row.dictName}`, {
+          toast(`已删除${row.name}`, {
             type: "success"
           });
         } else {
@@ -174,16 +189,18 @@ export function useDict() {
   }
 
   function handleSelectionChange(val) {
-    console.log("handleSelectionChange", val);
+    selectedNum.value = val.length;
+    // 重置表格高度
+    tableRef.value.setAdaptive();
   }
 
   async function onSearch() {
     loading.value = true;
     form.current = pagination.currentPage;
     form.size = pagination.pageSize;
-    const { code, data, message } = await listDict(toRaw(form));
+    const { code, data, message } = await listDictData(toRaw(form));
     if (code != "H200") {
-      message(message, { type: "error" });
+      toast(message, { type: "error" });
     } else {
       dataList.value = data.records;
       pagination.total = data.total;
@@ -199,19 +216,22 @@ export function useDict() {
     onSearch();
   };
 
-  function openDialog(title = "新增", row?: FormItemProps) {
+  function openDialog(title = "新增", row?: DictDataFormItemProps) {
     addDialog({
       title: `${title}字典`,
       props: {
         formInline: {
           id: row?.id ?? null,
-          dictName: row?.dictName ?? "",
-          dictCode: row?.dictCode ?? "",
+          dictId: form.dictId,
+          name: row?.name ?? "",
+          value: row?.value ?? "",
+          color: row?.color ?? "",
           status: row?.status ?? 0,
+          sortOrder: row?.sortOrder ?? 1,
           remark: row?.remark ?? ""
         }
       },
-      width: "40%",
+      width: "35%",
       draggable: true,
       fullscreen: deviceDetection(),
       fullscreenIcon: true,
@@ -219,9 +239,9 @@ export function useDict() {
       contentRenderer: () => h(editForm, { ref: formRef }),
       beforeSure: (done, { options }) => {
         const FormRef = formRef.value.getRef();
-        const curData = options.props.formInline as FormItemProps;
+        const curData = options.props.formInline as DictDataFormItemProps;
         function chores() {
-          toast(`您${title}了字典名称为${curData.dictName}的这条数据`, {
+          toast(`您${title}了数据项名称为${curData.name}的这条数据`, {
             type: "success"
           });
           done(); // 关闭弹框
@@ -229,11 +249,11 @@ export function useDict() {
         }
         FormRef.validate(async valid => {
           if (valid) {
-            console.log("curData", curData);
+            console.log("curData", row);
             // 表单规则校验通过
             if (title === "新增") {
               // 实际开发先调用新增接口，再进行下面操作
-              const res = await addDict(curData);
+              const res = await addDictData(curData);
               if (res.code == "H200") {
                 chores();
               } else {
@@ -241,7 +261,7 @@ export function useDict() {
               }
             } else {
               // 实际开发先调用修改接口，再进行下面操作
-              const res = await updateDict(curData);
+              const res = await updateDictData(curData);
               if (res.code == "H200") {
                 chores();
               } else {
@@ -253,17 +273,57 @@ export function useDict() {
       }
     });
   }
-  function openDictData(row) {
-    curRow.value = row;
-    dictDataDrawer.value = true;
-  }
-  function handleDrawerUpdate(newVal: boolean) {
-    dictDataDrawer.value = newVal;
-  }
-  onMounted(async () => {
-    onSearch();
-  });
 
+  function handleDrawerOpen(dictObj) {
+    form.dictId = dictObj.id;
+    pagination.currentPage = 1;
+    pagination.pageSize = 10;
+    resetForm(formRef.value);
+  }
+
+  function handleDrawerClose() {
+    dataList.value = [];
+  }
+
+  function handleSelectionCancel() {
+    selectedNum.value = 0;
+    // 用于多选表格，清空用户的选择
+    tableRef.value.getTableRef().clearSelection();
+  }
+
+  function handlebatchDelete() {
+    // 返回当前选中的行
+    const curSelected = tableRef.value.getTableRef().getSelectionRows();
+    showDialog("警告", {
+      contentRenderer: () => (
+        <p style="text-align: center;margin-bottom:20px">
+          确认要删除
+          {curSelected.map((item, index) => (
+            <strong style="color:var(--el-color-danger);margin:0 5px">
+              {item.name}
+              {index < curSelected.length - 1 ? "、" : ""}
+            </strong>
+          ))}
+          吗?
+        </p>
+      ),
+      beforeSure: async done => {
+        const selectedIds = curSelected.map(item => item.id);
+        console.log("selectedIds", curSelected);
+        const res = await deleteDictData(selectedIds);
+        if (res.code == "H200") {
+          toast(`删除成功`, {
+            type: "success"
+          });
+        } else {
+          toast(res.message, { type: "error" });
+        }
+        done(); // 关闭弹框
+        tableRef.value.getTableRef().clearSelection();
+        onSearch();
+      }
+    });
+  }
   return {
     form,
     isShow,
@@ -273,7 +333,9 @@ export function useDict() {
     dataList,
     isLinkage,
     pagination,
-    dictDataDrawer,
+    formRef,
+    tableRef,
+    selectedNum,
     onSearch,
     resetForm,
     openDialog,
@@ -281,8 +343,9 @@ export function useDict() {
     handleSizeChange,
     handleCurrentChange,
     handleSelectionChange,
-    // 数据项
-    openDictData,
-    handleDrawerUpdate
+    handleDrawerOpen,
+    handleDrawerClose,
+    handleSelectionCancel,
+    handlebatchDelete
   };
 }

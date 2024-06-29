@@ -4,7 +4,8 @@ import { ref, computed, nextTick, onMounted } from "vue";
 import { PureTableBar } from "@/components/RePureTableBar";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { deviceDetection } from "@pureadmin/utils";
-
+import { statusOptions } from "./utils/enums";
+import DictData from "./dict-data/index.vue";
 import Delete from "@iconify-icons/ep/delete";
 import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";
@@ -17,23 +18,6 @@ defineOptions({
   name: "SystemDict"
 });
 
-const iconClass = computed(() => {
-  return [
-    "w-[22px]",
-    "h-[22px]",
-    "flex",
-    "justify-center",
-    "items-center",
-    "outline-none",
-    "rounded-[4px]",
-    "cursor-pointer",
-    "transition-colors",
-    "hover:bg-[#0000000f]",
-    "dark:hover:bg-[#ffffff1f]",
-    "dark:hover:text-[#ffffffd9]"
-  ];
-});
-
 const formRef = ref();
 const tableRef = ref();
 
@@ -44,13 +28,17 @@ const {
   columns,
   dataList,
   pagination,
+  curRow,
+  dictDataDrawer,
   onSearch,
   resetForm,
   openDialog,
   handleDelete,
   handleSizeChange,
   handleCurrentChange,
-  handleSelectionChange
+  handleSelectionChange,
+  openDictData,
+  handleDrawerUpdate
 } = useDict();
 </script>
 
@@ -62,20 +50,22 @@ const {
       :model="form"
       class="search-form bg-bg_color w-[99/100] pl-8 pt-[12px] overflow-auto"
     >
-      <el-form-item label="字典名称：" prop="name">
+      <el-form-item label="字典名称：" prop="dictName">
         <el-input
-          v-model="form.name"
+          v-model="form.dictName"
           placeholder="请输入字典名称"
           clearable
           class="!w-[180px]"
+          @keyup.enter="onSearch"
         />
       </el-form-item>
-      <el-form-item label="字典编码：" prop="code">
+      <el-form-item label="字典编码：" prop="dictCode">
         <el-input
-          v-model="form.code"
+          v-model="form.dictCode"
           placeholder="请输入字典编码"
           clearable
           class="!w-[180px]"
+          @keyup.enter="onSearch"
         />
       </el-form-item>
       <el-form-item label="状态：" prop="status">
@@ -84,9 +74,14 @@ const {
           placeholder="请选择状态"
           clearable
           class="!w-[180px]"
+          @change="onSearch"
         >
-          <el-option label="启用" :value="0" />
-          <el-option label="停用" :value="1" />
+          <el-option
+            v-for="item in statusOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -127,6 +122,7 @@ const {
         <template v-slot="{ size, dynamicColumns }">
           <pure-table
             ref="tableRef"
+            row-key="id"
             align-whole="center"
             showOverflowTooltip
             table-layout="auto"
@@ -163,31 +159,31 @@ const {
                 type="success"
                 :size="size"
                 :icon="useRenderIcon(Menu)"
-                @click="openDialog('修改', row)"
+                @click="openDictData(row)"
               >
                 数据项
               </el-button>
-              <el-popconfirm
-                :title="`是否确认删除名称为${row.name}的这条数据`"
-                @confirm="handleDelete(row)"
+              <el-button
+                class="reset-margin"
+                link
+                type="danger"
+                :size="size"
+                :icon="useRenderIcon(Delete)"
+                @click="handleDelete(row)"
               >
-                <template #reference>
-                  <el-button
-                    class="reset-margin"
-                    link
-                    type="danger"
-                    :size="size"
-                    :icon="useRenderIcon(Delete)"
-                  >
-                    删除
-                  </el-button>
-                </template>
-              </el-popconfirm>
+                删除
+              </el-button>
             </template>
           </pure-table>
         </template>
       </PureTableBar>
     </div>
+
+    <DictData
+      :dictDataDrawer="dictDataDrawer"
+      :dictObj="curRow"
+      @updateDictDataDrawer="handleDrawerUpdate"
+    />
   </div>
 </template>
 

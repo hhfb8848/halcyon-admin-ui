@@ -14,5 +14,30 @@ interface FormItemProps {
 interface FormProps {
   formInline: FormItemProps;
 }
-
-export type { FormItemProps, FormProps };
+// 数据项
+interface DictDataFormItemProps {
+  id?: number;
+  /** 字典ID */
+  dictId: number;
+  /** 数据项名称 */
+  name: string;
+  /** 数据项值 */
+  value: string;
+  /** 颜色 */
+  color: string;
+  /** 状态 */
+  status: number;
+  /** 排序 */
+  sortOrder: number;
+  /** 备注 */
+  remark: string;
+}
+interface DictDataFormProps {
+  formInline: DictDataFormItemProps;
+}
+export type {
+  FormItemProps,
+  FormProps,
+  DictDataFormItemProps,
+  DictDataFormProps
+};

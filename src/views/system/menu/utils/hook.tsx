@@ -223,7 +223,6 @@ export function useMenu() {
     });
     onSearch();
   }
-
   onMounted(() => {
     onSearch();
   });
