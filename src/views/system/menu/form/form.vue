@@ -141,7 +141,9 @@ defineExpose({ getRef });
             v-model="newFormInline.name"
             clearable
             :placeholder="
-              newFormInline.type !== 3 ? '请输入路由名称' : '请输入外链地址'
+              newFormInline.type !== 3
+                ? '如：SystemMenu'
+                : '如：https://github.com'
             "
           />
         </el-form-item>
@@ -152,7 +154,7 @@ defineExpose({ getRef });
           <el-input
             v-model="newFormInline.path"
             clearable
-            placeholder="请输入路由路径"
+            placeholder="如：/system/menu"
           />
         </el-form-item>
       </re-col>
@@ -161,7 +163,7 @@ defineExpose({ getRef });
           <el-input
             v-model="newFormInline.component"
             clearable
-            placeholder="请输入组件路径"
+            placeholder="如：system/menu/index"
           />
         </el-form-item>
       </re-col>
@@ -210,7 +212,7 @@ defineExpose({ getRef });
           <el-input
             v-model="newFormInline.frameSrc"
             clearable
-            placeholder="请输入 iframe 链接地址"
+            placeholder="如：https://github.com"
           />
         </el-form-item>
       </re-col>

@@ -7,8 +7,8 @@ import type { FormItemProps } from "../utils/types";
 import type { PaginationProps } from "@pureadmin/table";
 import { deviceDetection } from "@pureadmin/utils";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
-import { addDict, updateDict, listDict, deleteDict } from "@/api/dict/dict";
-export function useDict() {
+import { addRole, updateRole, listRole, deleteRole } from "@/api/role/role";
+export function useRole() {
   const pagination = reactive<PaginationProps>({
     total: 0,
     pageSize: 10,
@@ -16,32 +16,30 @@ export function useDict() {
     background: true
   });
   const form = reactive({
-    dictName: "",
-    dictCode: "",
+    roleName: "",
+    roleCode: "",
     status: "",
     size: pagination.pageSize,
     current: pagination.currentPage
   });
-  const curRow = ref({ dictName: "" });
+  const curRow = ref();
   const formRef = ref();
   const dataList = ref([]);
   const isShow = ref(false);
   const loading = ref(true);
   const isLinkage = ref(false);
   const switchLoadMap = ref({});
-  // 数据项弹窗
-  const dictDataDrawer = ref(false);
 
   const columns: TableColumnList = [
     {
-      label: "字典名称",
-      prop: "dictName",
+      label: "角色名称",
+      prop: "roleName",
       width: 200,
       fixed: "left"
     },
     {
-      label: "字典编码",
-      prop: "dictCode",
+      label: "角色编码",
+      prop: "roleCode",
       width: 200,
       fixed: "left"
     },
@@ -61,6 +59,11 @@ export function useDict() {
         />
       ),
       minWidth: 80
+    },
+    {
+      label: "绑定用户数",
+      prop: "userCount",
+      width: 100
     },
     {
       label: "创建时间",
@@ -89,7 +92,7 @@ export function useDict() {
         <p style="text-align: center;margin-bottom:20px">
           确认要{row.status === 1 ? "停用" : "启用"}
           <strong style="color:var(--el-color-warning);margin:0 5px">
-            {row.dictName}
+            {row.roleName}
           </strong>
           吗?
         </p>
@@ -102,16 +105,16 @@ export function useDict() {
             loading: true
           }
         );
-        const res = await updateDict(row);
+        const res = await updateRole(row);
+        switchLoadMap.value[index] = Object.assign(
+          {},
+          switchLoadMap.value[index],
+          {
+            loading: false
+          }
+        );
         if (res.code == "H200") {
-          switchLoadMap.value[index] = Object.assign(
-            {},
-            switchLoadMap.value[index],
-            {
-              loading: false
-            }
-          );
-          toast(`已${row.status === 1 ? "停用" : "启用"}${row.dictName}`, {
+          toast(`已${row.status === 1 ? "停用" : "启用"}${row.roleName}`, {
             type: "success"
           });
         } else {
@@ -134,15 +137,15 @@ export function useDict() {
         <p style="text-align: center;margin-bottom:20px">
           确认要删除
           <strong style="color:var(--el-color-danger);margin:0 5px">
-            {row.dictName}
+            {row.roleName}
           </strong>
           吗?
         </p>
       ),
       beforeSure: async done => {
-        const res = await deleteDict(row.id);
+        const res = await deleteRole(row.id);
         if (res.code == "H200") {
-          toast(`已删除"${row.dictName}`, {
+          toast(`已删除"${row.roleName}`, {
             type: "success"
           });
         } else {
@@ -173,7 +176,7 @@ export function useDict() {
     loading.value = true;
     form.current = pagination.currentPage;
     form.size = pagination.pageSize;
-    const { code, data, message } = await listDict(toRaw(form));
+    const { code, data, message } = await listRole(toRaw(form));
     if (code != "H200") {
       message(message, { type: "error" });
     } else {
@@ -193,12 +196,12 @@ export function useDict() {
 
   function openDialog(title = "新增", row?: FormItemProps) {
     addDialog({
-      title: `${title}字典`,
+      title: `${title}角色`,
       props: {
         formInline: {
           id: row?.id ?? null,
-          dictName: row?.dictName ?? "",
-          dictCode: row?.dictCode ?? "",
+          roleName: row?.roleName ?? "",
+          roleCode: row?.roleCode ?? "",
           status: row?.status ?? 0,
           remark: row?.remark ?? ""
         }
@@ -213,7 +216,7 @@ export function useDict() {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
         function chores() {
-          toast(`您${title}了字典名称为${curData.dictName}的这条数据`, {
+          toast(`您${title}了角色名称为${curData.roleName}的这条数据`, {
             type: "success"
           });
           done(); // 关闭弹框
@@ -225,7 +228,7 @@ export function useDict() {
             // 表单规则校验通过
             if (title === "新增") {
               // 实际开发先调用新增接口，再进行下面操作
-              const res = await addDict(curData);
+              const res = await addRole(curData);
               if (res.code == "H200") {
                 chores();
               } else {
@@ -233,7 +236,7 @@ export function useDict() {
               }
             } else {
               // 实际开发先调用修改接口，再进行下面操作
-              const res = await updateDict(curData);
+              const res = await updateRole(curData);
               if (res.code == "H200") {
                 chores();
               } else {
@@ -244,13 +247,6 @@ export function useDict() {
         });
       }
     });
-  }
-  function openDictData(row) {
-    curRow.value = row;
-    dictDataDrawer.value = true;
-  }
-  function handleDrawerUpdate(newVal: boolean) {
-    dictDataDrawer.value = newVal;
   }
   onMounted(async () => {
     onSearch();
@@ -265,16 +261,12 @@ export function useDict() {
     dataList,
     isLinkage,
     pagination,
-    dictDataDrawer,
     onSearch,
     resetForm,
     openDialog,
     handleDelete,
     handleSizeChange,
     handleCurrentChange,
-    handleSelectionChange,
-    // 数据项
-    openDictData,
-    handleDrawerUpdate
+    handleSelectionChange
   };
 }

@@ -5,8 +5,8 @@ import { FormProps } from "../utils/types";
 import { statusOptions } from "../utils/enums";
 const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
-    dictName: "",
-    dictCode: "",
+    roleName: "",
+    roleCode: "",
     status: 0,
     remark: ""
   })
@@ -18,6 +18,7 @@ const newFormInline = ref(props.formInline);
 function getRef() {
   return ruleFormRef.value;
 }
+
 defineExpose({ getRef });
 </script>
 
@@ -28,23 +29,23 @@ defineExpose({ getRef });
     :rules="formRules"
     label-width="100px"
   >
-    <el-form-item label="字典名称：" prop="dictName">
+    <el-form-item label="角色名称：" prop="roleName">
       <el-input
-        v-model="newFormInline.dictName"
+        v-model="newFormInline.roleName"
         clearable
-        placeholder="请输入字典名称"
+        placeholder="请输入角色名称"
       />
     </el-form-item>
 
-    <el-form-item label="字典编码：" prop="dictCode">
+    <el-form-item label="角色编码：" prop="roleCode">
       <el-input
-        v-model="newFormInline.dictCode"
+        v-model="newFormInline.roleCode"
         clearable
-        placeholder="请输入字典编码"
+        placeholder="请输入角色编码"
         :disabled="newFormInline.id !== null"
       />
     </el-form-item>
-    <el-form-item label="字典状态：" prop="status">
+    <el-form-item label="角色状态：" prop="status">
       <el-radio-group v-model="newFormInline.status">
         <el-radio
           v-for="item in statusOptions"
