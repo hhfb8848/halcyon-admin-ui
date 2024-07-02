@@ -68,6 +68,7 @@ export function useDictData() {
           inactive-value={1}
           active-text="已启用"
           inactive-text="已停用"
+          style="--el-switch-on-color: #13ce66"
           inline-prompt
           onChange={() => onChange(scope as any)}
         />

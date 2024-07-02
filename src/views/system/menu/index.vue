@@ -108,7 +108,7 @@ const {
               v-show="row.menuType !== 3"
               class="reset-margin"
               link
-              type="primary"
+              type="success"
               :size="size"
               :icon="useRenderIcon(AddFill)"
               @click="openDialog('新增', { parentId: row.id } as any)"

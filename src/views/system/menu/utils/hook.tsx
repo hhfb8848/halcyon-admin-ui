@@ -65,6 +65,10 @@ export function useMenu() {
       )
     },
     {
+      label: "路由名称",
+      prop: "name"
+    },
+    {
       label: "路由路径",
       prop: "path"
     },

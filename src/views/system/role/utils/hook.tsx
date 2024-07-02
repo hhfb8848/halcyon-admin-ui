@@ -50,6 +50,7 @@ export function useRole() {
           size={scope.props.size === "small" ? "small" : "default"}
           loading={switchLoadMap.value[scope.index]?.loading}
           v-model={scope.row.status}
+          style="--el-switch-on-color: #13ce66"
           active-value={0}
           inactive-value={1}
           active-text="已启用"
