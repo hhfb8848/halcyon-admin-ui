@@ -22,14 +22,15 @@ export function useRole() {
     size: pagination.pageSize,
     current: pagination.currentPage
   });
-  const curRow = ref();
+  const curRow = ref({ roleName: "" });
+
   const formRef = ref();
   const dataList = ref([]);
   const isShow = ref(false);
   const loading = ref(true);
   const isLinkage = ref(false);
   const switchLoadMap = ref({});
-
+  const roleMenuDrawer = ref(false);
   const columns: TableColumnList = [
     {
       label: "角色名称",
@@ -82,7 +83,7 @@ export function useRole() {
     {
       label: "操作",
       fixed: "right",
-      width: 220,
+      width: 250,
       slot: "operation"
     }
   ];
@@ -249,6 +250,15 @@ export function useRole() {
       }
     });
   }
+  // 菜单权限
+  function openRoleMenu(row) {
+    curRow.value = row;
+    roleMenuDrawer.value = true;
+  }
+
+  function handleDrawerUpdate(newVal: boolean) {
+    roleMenuDrawer.value = newVal;
+  }
   onMounted(async () => {
     onSearch();
   });
@@ -262,12 +272,15 @@ export function useRole() {
     dataList,
     isLinkage,
     pagination,
+    roleMenuDrawer,
     onSearch,
     resetForm,
     openDialog,
     handleDelete,
     handleSizeChange,
     handleCurrentChange,
-    handleSelectionChange
+    handleSelectionChange,
+    openRoleMenu,
+    handleDrawerUpdate
   };
 }

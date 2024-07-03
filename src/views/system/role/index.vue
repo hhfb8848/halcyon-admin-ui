@@ -12,7 +12,7 @@ import Menu from "@iconify-icons/ep/menu";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 import Close from "@iconify-icons/ep/close";
 import Check from "@iconify-icons/ep/check";
-
+import RoleMenu from "./role-menu/index.vue";
 defineOptions({
   name: "SystemRole"
 });
@@ -27,13 +27,17 @@ const {
   columns,
   dataList,
   pagination,
+  curRow,
+  roleMenuDrawer,
   onSearch,
   resetForm,
   openDialog,
   handleDelete,
   handleSizeChange,
   handleCurrentChange,
-  handleSelectionChange
+  handleSelectionChange,
+  openRoleMenu,
+  handleDrawerUpdate
 } = useRole();
 </script>
 
@@ -158,11 +162,27 @@ const {
               >
                 删除
               </el-button>
+              <el-button
+                class="reset-margin"
+                link
+                type="success"
+                :size="size"
+                :icon="useRenderIcon(Menu)"
+                @click="openRoleMenu(row)"
+              >
+                菜单权限
+              </el-button>
             </template>
           </pure-table>
         </template>
       </PureTableBar>
     </div>
+
+    <RoleMenu
+      :roleMenuDrawer="roleMenuDrawer"
+      :roleObj="curRow"
+      @updateRoleMenuDrawer="handleDrawerUpdate"
+    />
   </div>
 </template>
 
