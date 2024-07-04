@@ -16,7 +16,7 @@ export function useMenu() {
   const dataList = ref([]);
   const loading = ref(true);
 
-  const getMenuType = (type, text = false) => {
+  const getMenuType = (type: number, text = false): any => {
     switch (type) {
       case 0:
         return text ? "目录" : "success";
@@ -28,6 +28,8 @@ export function useMenu() {
         return text ? "外链" : "danger";
       case 4:
         return text ? "按钮" : "info";
+      default:
+        return "";
     }
   };
   const getVisble = (type, text = false) => {
@@ -244,6 +246,7 @@ export function useMenu() {
     openDialog,
     /** 删除菜单 */
     handleDelete,
-    handleSelectionChange
+    handleSelectionChange,
+    getMenuType
   };
 }

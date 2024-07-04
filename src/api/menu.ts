@@ -14,3 +14,9 @@ export const listMenu = (data?: object) => {
 export const updateMenu = (data?: object) => {
   return http.request<any>("put", baseUrlApi("/sysMenu"), { data });
 };
+/** 简单菜单列表 */
+export const listSimpleMenu = (params?: object) => {
+  return http.request<any>("get", baseUrlApi("/sysMenu/listSimple"), {
+    params
+  });
+};

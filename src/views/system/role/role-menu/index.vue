@@ -1,26 +1,24 @@
 <script setup lang="ts">
-import { h, onMounted, ref, useSlots, watch } from "vue";
-import Delete from "@iconify-icons/ep/delete";
-import EditPen from "@iconify-icons/ep/edit-pen";
-import AddFill from "@iconify-icons/ri/add-circle-line";
-import Refresh from "@iconify-icons/ep/refresh";
-import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import { PureTableBar } from "@/components/RePureTableBar";
-import { deviceDetection } from "@pureadmin/utils";
-import { statusOptions } from "../utils/enums";
-import { computed } from "vue";
-import { clone } from "@pureadmin/utils";
+import { h, onMounted, ref, useSlots, watch, nextTick } from "vue";
+import { message as toast } from "@/utils/message";
+import {
+  delay,
+  subBefore,
+  deviceDetection,
+  useResizeObserver
+} from "@pureadmin/utils";
 import ElTreeLine from "@/components/ReTreeLine";
 import { extractPathList, deleteChildren } from "@/utils/tree";
-import { usePermissionStoreHook } from "@/store/modules/permission";
-import { formRules } from "../utils/rule";
-import { FormProps } from "../utils/types";
+import { getKeyList } from "@pureadmin/utils";
+import { listSimpleMenu } from "@/api/menu";
+import { handleTree } from "@/utils/tree";
+import { isAllEmpty } from "@pureadmin/utils";
+import { useMenu } from "@/views/system/menu/utils/hook";
+import { listMenuIdByRoleId } from "@/api/role-menu/role-menu";
 defineOptions({
   name: "SystemRoleMenu"
 });
-const isLinkage = ref(false);
-const isExpandAll = ref(false);
-const isSelectAll = ref(false);
+const { getMenuType } = useMenu();
 const props = defineProps({
   // 控制值
   roleMenuDrawer: {
@@ -33,30 +31,29 @@ const props = defineProps({
     default: null
   }
 });
+const loading = ref(true);
+const menusTree = ref([]);
+const treeRef = ref();
+const treeSearchValue = ref("");
+const treeContainerRef = ref();
+const treeHeight = ref(500);
+const isLinkage = ref(false);
+const isExpandAll = ref(false);
+const isSelectAll = ref(false);
+// 展开用的数组
+let allMenuIds = [];
 
-const ruleFormRef = ref();
-
-function getRef() {
-  return ruleFormRef.value;
-}
-
-defineExpose({ getRef });
-const menusTree = clone(usePermissionStoreHook().wholeMenus, true);
-const menusData = computed(() => {
-  return deleteChildren(menusTree);
-});
-const expandedKeys = extractPathList(menusData.value);
-const dataProps = {
-  value: "uniqueId",
-  children: "children"
+const treeProps = {
+  value: "id",
+  title: "title",
+  children: "children",
+  type: "type"
 };
-
 const emit = defineEmits(["updateRoleMenuDrawer"]);
 const localRoleMenuDrawer = ref(props.roleMenuDrawer);
 watch(
   () => props.roleMenuDrawer,
   newVal => {
-    console.log("props.roleMenuDrawer", newVal);
     localRoleMenuDrawer.value = newVal;
   }
 );
@@ -64,61 +61,128 @@ watch(
 watch(localRoleMenuDrawer, newVal => {
   emit("updateRoleMenuDrawer", newVal);
 });
-function handleDrawerOpen(roleObj) {}
+watch(isExpandAll, val => {
+  val
+    ? treeRef.value.setExpandedKeys(allMenuIds)
+    : treeRef.value.setExpandedKeys([]);
+});
+
+watch(isSelectAll, val => {
+  val
+    ? treeRef.value.setCheckedKeys(allMenuIds)
+    : treeRef.value.setCheckedKeys([]);
+});
+
+onMounted(() => {
+  useResizeObserver(treeContainerRef, async () => {
+    await nextTick();
+    delay(60).then(() => {
+      treeHeight.value = treeContainerRef.value.clientHeight;
+    });
+  });
+});
+const calculateTreeHeight = () => {
+  if (treeRef.value) {
+    treeHeight.value = treeContainerRef.value.clientHeight;
+  }
+};
+async function getSimpleMenuList() {
+  const { code, data, message } = await listSimpleMenu();
+  if (code != "H200") {
+    message(message, { type: "error" });
+  } else {
+    // 全部菜单ID
+    allMenuIds = getKeyList(data, "id");
+    menusTree.value = handleTree(data);
+  }
+}
+
+async function handleDrawerOpen(roleObj) {
+  loading.value = true;
+  const { code, data, message } = await listMenuIdByRoleId(roleObj.id);
+  if (code != "H200") {
+    toast(message, { type: "error" });
+  } else {
+    treeRef.value.setCheckedKeys(data);
+    loading.value = false;
+  }
+}
+function onQueryChanged(query: string) {
+  treeRef.value!.filter(query);
+}
+function filterMethod(query: string, node: any) {
+  return node.title.includes(query);
+}
 function handleDrawerClose() {}
 function save() {}
+
+getSimpleMenuList();
 </script>
 
 <template>
-  <el-drawer
-    v-model="localRoleMenuDrawer"
-    :title="props.roleObj.roleName"
-    direction="rtl"
-    size="40%"
-    @open="handleDrawerOpen(props.roleObj)"
-    @closed="handleDrawerClose"
-    class="role-menu-drawer"
-  >
-    <div>
-      <div class="header">
-        <el-input
-          placeholder="请输入菜单名称（为角色分配菜单后自动分配首页）"
-          style="width: 70%"
-        />
+  <div>
+    <el-drawer
+      v-model="localRoleMenuDrawer"
+      :title="props.roleObj.roleName"
+      direction="rtl"
+      size="40%"
+      class="role-menu-drawer"
+      :close-on-click-modal="false"
+      @open="handleDrawerOpen(props.roleObj)"
+      @closed="handleDrawerClose"
+    >
+      <div style="height: 100%">
+        <div class="header">
+          <el-input
+            v-model="treeSearchValue"
+            placeholder="请输入菜单名称（为角色分配菜单后自动分配首页）"
+            style="width: 70%"
+            clearable
+            @input="onQueryChanged"
+          />
+        </div>
+        <div ref="treeContainerRef" v-loading="loading" style="height: 90%">
+          <el-tree-v2
+            ref="treeRef"
+            :height="treeHeight"
+            :data="menusTree"
+            :props="treeProps"
+            show-checkbox
+            :indent="30"
+            :check-strictly="!isLinkage"
+            :filter-node-method="filterMethod"
+            ><template v-slot:default="{ node }">
+              <el-tree-line :node="node" :showLabelLine="true">
+                <template v-slot:node-label>
+                  <span class="text-sm">
+                    {{ node.data.title }}
+                  </span>
+                </template>
+                <template v-slot:after-node-label>
+                  <el-text :type="getMenuType(node.data.type)" effect="plain">
+                    {{ getMenuType(node.data.type, true) }}
+                  </el-text>
+                </template>
+              </el-tree-line>
+            </template>
+          </el-tree-v2>
+        </div>
       </div>
-      <div class="tree">
-        <el-tree
-          :data="menusData"
-          :props="dataProps"
-          show-checkbox
-          default-expand-all
-          node-key="uniqueId"
-          :indent="30"
-          ><template v-slot:default="{ node }">
-            <el-tree-line :node="node" :showLabelLine="true">
-              <template v-slot:node-label>
-                <span class="text-sm">
-                  {{ node.data.meta.title }}
-                </span>
-              </template>
-              <template v-slot:after-node-label>
-                <span class="text-sm">
-                  {{ node.data.meta.title }}
-                </span>
-              </template>
-            </el-tree-line>
-          </template>
-        </el-tree>
-      </div>
-    </div>
-    <template #footer>
-      <div style="flex: auto">
-        <el-button :icon="useRenderIcon(AddFill)" type="primary" @click="save()"
-          >保存</el-button
-        >
-      </div>
-    </template>
-  </el-drawer>
+      <template #footer>
+        <div class="flex justify-between">
+          <div>
+            <el-button @click="localRoleMenuDrawer = false">取消</el-button>
+            <el-button type="primary" @click="save">保存</el-button>
+          </div>
+          <div>
+            <el-checkbox v-model="isExpandAll" border label="展开/折叠" />
+            <el-checkbox v-model="isSelectAll" border label="全选/全不选" />
+            <el-checkbox v-model="isLinkage" border label="父子联动" />
+          </div>
+        </div>
+      </template>
+    </el-drawer>
+  </div>
 </template>
 
 <style lang="scss">
