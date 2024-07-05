@@ -14,7 +14,7 @@ import { listSimpleMenu } from "@/api/menu";
 import { handleTree } from "@/utils/tree";
 import { isAllEmpty } from "@pureadmin/utils";
 import { useMenu } from "@/views/system/menu/utils/hook";
-import { listMenuIdByRoleId } from "@/api/role-menu/role-menu";
+import { listMenuIdByRoleId, assignForRole } from "@/api/role-menu/role-menu";
 defineOptions({
   name: "SystemRoleMenu"
 });
@@ -25,7 +25,7 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  // 字典对象
+  // 角色对象
   roleObj: {
     type: Object,
     default: null
@@ -81,11 +81,6 @@ onMounted(() => {
     });
   });
 });
-const calculateTreeHeight = () => {
-  if (treeRef.value) {
-    treeHeight.value = treeContainerRef.value.clientHeight;
-  }
-};
 async function getSimpleMenuList() {
   const { code, data, message } = await listSimpleMenu();
   if (code != "H200") {
@@ -103,18 +98,50 @@ async function handleDrawerOpen(roleObj) {
   if (code != "H200") {
     toast(message, { type: "error" });
   } else {
+    isSelectAll.value = false;
+    isLinkage.value = false;
     treeRef.value.setCheckedKeys(data);
     loading.value = false;
+    isExpandAll.value = true;
   }
 }
 function onQueryChanged(query: string) {
   treeRef.value!.filter(query);
+  if (query == "") {
+    isExpandAll.value = true;
+  }
 }
 function filterMethod(query: string, node: any) {
   return node.title.includes(query);
 }
 function handleDrawerClose() {}
-function save() {}
+async function save() {
+  const checkedKeys = treeRef.value.getCheckedKeys();
+  const checkedNodes = treeRef.value.getCheckedNodes();
+  // 判断一个节点的父节点是否被选中
+  const isParentChecked = (node: any) => {
+    if (!node.parentId) {
+      return true; // 没有父节点，假定根节点，假设父节点已选中
+    }
+    return checkedKeys.includes(node.parentId); // 检查父节点是否在选中节点中
+  };
+  // 检查是否有选中节点存在未选中的父节点
+  const hasUncheckedParents = checkedNodes.some(node => !isParentChecked(node));
+  if (hasUncheckedParents) {
+    toast("选择了子节点但没有选择父节点，请修正后再保存", { type: "warning" });
+    return;
+  }
+  const { code, message } = await assignForRole({
+    roleId: props.roleObj.id,
+    menuIds: checkedKeys
+  });
+  if (code != "H200") {
+    toast(message, { type: "error" });
+  } else {
+    toast("分配成功", { type: "success" });
+    localRoleMenuDrawer.value = false;
+  }
+}
 
 getSimpleMenuList();
 </script>
@@ -150,7 +177,7 @@ getSimpleMenuList();
             show-checkbox
             :indent="30"
             :check-strictly="!isLinkage"
-            :filter-node-method="filterMethod"
+            :filter-method="filterMethod"
             ><template v-slot:default="{ node }">
               <el-tree-line :node="node" :showLabelLine="true">
                 <template v-slot:node-label>

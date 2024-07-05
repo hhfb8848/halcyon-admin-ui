@@ -8,3 +8,10 @@ export const listMenuIdByRoleId = (id: number) => {
     baseUrlApi(`/sysRoleMenu/getMenuIdList/${id}`)
   );
 };
+
+/** 为角色分配菜单 */
+export const assignForRole = (data?: object) => {
+  return http.request<any>("post", baseUrlApi("/sysRoleMenu/assignForRole"), {
+    data
+  });
+};
