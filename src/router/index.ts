@@ -10,7 +10,7 @@ import { isUrl, openLink, storageLocal, isAllEmpty } from "@pureadmin/utils";
 import {
   ascending,
   getTopMenu,
-  initRouter,
+  getInitRouter,
   isOneOfArray,
   getHistoryMode,
   findRouteByPath,
@@ -151,7 +151,7 @@ router.beforeEach((to: ToRouteType, _from, next) => {
         usePermissionStoreHook().wholeMenus.length === 0 &&
         to.path !== "/login"
       ) {
-        initRouter().then((router: Router) => {
+        getInitRouter().then((router: Router) => {
           if (!useMultiTagsStoreHook().getMultiTagsCache) {
             const { path } = to;
             const route = findRouteByPath(

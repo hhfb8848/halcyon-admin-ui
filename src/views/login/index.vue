@@ -7,7 +7,7 @@ import { useNav } from "@/layout/hooks/useNav";
 import type { FormInstance } from "element-plus";
 import { useLayout } from "@/layout/hooks/useLayout";
 import { useUserStoreHook } from "@/store/modules/user";
-import { initRouter, getTopMenu } from "@/router/utils";
+import { initRouterWithData, getTopMenu } from "@/router/utils";
 import { bg, avatar, illustration } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ref, reactive, toRaw, onMounted, onBeforeUnmount } from "vue";
@@ -49,8 +49,9 @@ const onLogin = async (formEl: FormInstance | undefined) => {
         })
         .then(res => {
           if (res.code == "H200") {
+            console.log("res", res);
             // 获取后端路由
-            return initRouter().then(() => {
+            return initRouterWithData(res.data.asyncRoutesVOList).then(() => {
               router.push(getTopMenu(true).path).then(() => {
                 message("登录成功", { type: "success" });
               });

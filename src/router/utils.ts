@@ -197,11 +197,12 @@ function handleAsyncRoutes(routeList) {
 }
 
 /** 初始化路由（`new Promise` 写法防止在异步请求中造成无限循环）*/
+/** 初始化路由不用这个，用下面的 initRoutesWithData */
+
 function initRouter() {
   if (getConfig()?.CachingAsyncRoutes) {
     // 开启动态路由缓存本地localStorage
     const key = "async-routes";
-    console.log("shi");
     const asyncRouteList = storageLocal().getItem(key) as any;
     if (asyncRouteList && asyncRouteList?.length > 0) {
       return new Promise(resolve => {
@@ -227,7 +228,23 @@ function initRouter() {
     });
   }
 }
-
+// 初始化路由但不再次请求后端，而是拿登录时返回的路由
+const userAsyncRoutesKey = "user-async-routes";
+function initRouterWithData(asyncRouteList: any) {
+  storageLocal().setItem(userAsyncRoutesKey, asyncRouteList);
+  return new Promise(resolve => {
+    handleAsyncRoutes(asyncRouteList);
+    resolve(router);
+  });
+}
+// 获取初始化路由，执行这个方法之前，必须执行initRouterWithData
+function getInitRouter() {
+  const asyncRouteList = storageLocal().getItem(userAsyncRoutesKey) as any;
+  return new Promise(resolve => {
+    handleAsyncRoutes(asyncRouteList);
+    resolve(router);
+  });
+}
 /**
  * 将多级嵌套路由处理成一维数组
  * @param routesList 传入路由
@@ -412,5 +429,7 @@ export {
   handleAliveRoute,
   formatTwoStageRoutes,
   formatFlatteningRoutes,
-  filterNoPermissionTree
+  filterNoPermissionTree,
+  initRouterWithData,
+  getInitRouter
 };
