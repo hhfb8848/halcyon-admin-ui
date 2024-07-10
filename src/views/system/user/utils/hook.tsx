@@ -203,7 +203,11 @@ export function useUserList() {
           id: row?.id ?? null,
           username: row?.username ?? "",
           password: row?.password ?? "",
+          nickname: row?.nickname ?? "",
           status: row?.status ?? 0,
+          gender: row?.gender ?? 0,
+          email: row?.email ?? "",
+          phone: row?.phone ?? "",
           intro: row?.intro ?? ""
         }
       },
