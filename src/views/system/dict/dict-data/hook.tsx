@@ -219,7 +219,7 @@ export function useDictData() {
 
   function openDialog(title = "新增", row?: DictDataFormItemProps) {
     addDialog({
-      title: `${title}字典`,
+      title: `${title}字典数据项`,
       props: {
         formInline: {
           id: row?.id ?? null,

@@ -15,6 +15,6 @@ export const updateUser = (data?: object) => {
 };
 
 /** 删除用户 */
-export const deleteUser = (id: number) => {
-  return http.request<any>("delete", baseUrlApi(`/sysUser/${id}`));
+export const deleteUser = (data: object) => {
+  return http.request<any>("delete", baseUrlApi(`/sysUser`), { data });
 };

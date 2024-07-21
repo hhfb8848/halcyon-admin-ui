@@ -41,7 +41,7 @@ export function useRole() {
     {
       label: "角色编码",
       prop: "roleCode",
-      width: 200,
+      width: 240,
       fixed: "left"
     },
     {

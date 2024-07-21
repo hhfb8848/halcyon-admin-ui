@@ -7,6 +7,7 @@ import type { FormItemProps } from "./types";
 import type { PaginationProps } from "@pureadmin/table";
 import { deviceDetection } from "@pureadmin/utils";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
+import { usePublicHooks } from "@/views/system/hooks";
 import { addUser, updateUser, getUserList, deleteUser } from "@/api/user/list";
 export function useUserList() {
   const pagination = reactive<PaginationProps>({
@@ -29,19 +30,30 @@ export function useUserList() {
   const loading = ref(true);
   const isLinkage = ref(false);
   const switchLoadMap = ref({});
+  const { switchStyle } = usePublicHooks();
 
   const columns: TableColumnList = [
     {
-      label: "用户名称",
-      prop: "userName",
+      label: "用户名",
+      prop: "username",
       width: 200,
       fixed: "left"
     },
     {
-      label: "用户编码",
-      prop: "userCode",
-      width: 200,
+      label: "用户昵称",
+      prop: "nickname",
+      width: 100,
       fixed: "left"
+    },
+    {
+      label: "邮箱",
+      prop: "email",
+      width: 170
+    },
+    {
+      label: "手机号",
+      prop: "phone",
+      width: 160
     },
     {
       label: "状态",
@@ -50,31 +62,44 @@ export function useUserList() {
           size={scope.props.size === "small" ? "small" : "default"}
           loading={switchLoadMap.value[scope.index]?.loading}
           v-model={scope.row.status}
-          style="--el-switch-on-color: #13ce66;--el-switch-off-color: #ff4949"
           active-value={0}
           inactive-value={1}
           active-text="正常"
           inactive-text="冻结"
           inline-prompt
+          style={switchStyle.value}
           onChange={() => onChange(scope as any)}
         />
       ),
       minWidth: 80
     },
+
     {
-      label: "绑定用户数",
-      prop: "userCount",
-      width: 100
+      label: "性别",
+      prop: "gender",
+      width: 80,
+      cellRenderer: ({ row, props }) => (
+        <el-tag
+          size={props.size}
+          type={
+            row.gender === 0 ? "info" : row.gender === 1 ? "primary" : "danger"
+          }
+          effect="plain"
+        >
+          {row.gender === 0 ? "未知" : row.gender === 1 ? "男" : "女"}
+        </el-tag>
+      )
     },
     {
       label: "创建时间",
       prop: "createTime",
-      minWidth: 160,
+      minWidth: 110,
+      width: 120,
       formatter: ({ createTime }) =>
         dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
-      label: "备注",
+      label: "简介",
       prop: "remark",
       minWidth: 160
     },
@@ -91,9 +116,9 @@ export function useUserList() {
     showDialog("提示", {
       contentRenderer: () => (
         <p style="text-align: center;margin-bottom:20px">
-          确认要{row.status === 1 ? "停用" : "启用"}
+          确认要{row.status === 1 ? "冻结" : "启用"}
           <strong style="color:var(--el-color-warning);margin:0 5px">
-            {row.userName}
+            {row.username}
           </strong>
           吗?
         </p>
@@ -115,7 +140,7 @@ export function useUserList() {
           }
         );
         if (res.code == "H200") {
-          toast(`已${row.status === 1 ? "停用" : "启用"}${row.userName}`, {
+          toast(`已${row.status === 1 ? "冻结" : "启用"}${row.username}`, {
             type: "success"
           });
         } else {
@@ -125,6 +150,7 @@ export function useUserList() {
         onSearch();
       },
       closeCallBack: ({ args }) => {
+        console.log("closeCallBack", args);
         if (args?.command !== "sure") {
           row.status === 0 ? (row.status = 1) : (row.status = 0);
         }
@@ -138,13 +164,13 @@ export function useUserList() {
         <p style="text-align: center;margin-bottom:20px">
           确认要删除
           <strong style="color:var(--el-color-danger);margin:0 5px">
-            {row.userName}
+            {row.username}
           </strong>
           吗?
         </p>
       ),
       beforeSure: async done => {
-        const res = await deleteUser(row.id);
+        const res = await deleteUser([row.id]);
         if (res.code == "H200") {
           toast(`已删除"${row.userName}`, {
             type: "success"
