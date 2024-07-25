@@ -26,6 +26,9 @@ dependencies:
   axios:
     specifier: ^1.6.8
     version: 1.6.8
+  cropperjs:
+    specifier: ^1.6.2
+    version: 1.6.2
   dayjs:
     specifier: ^1.11.10
     version: 1.11.10
@@ -2341,6 +2344,10 @@ packages:
       parse-json: 5.2.0
       typescript: 5.4.5
     dev: true
+
+  /cropperjs@1.6.2:
+    resolution: {integrity: sha512-nhymn9GdnV3CqiEHJVai54TULFAE3VshJTXSqSJKa8yXAKyBKDWdhHarnlIPrshJ0WMFTGuFvG02YjLXfPiuOA==}
+    dev: false
 
   /cross-spawn@7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}

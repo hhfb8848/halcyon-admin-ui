@@ -6,9 +6,11 @@ import { showDialog } from "@/components/HalcyonDialog";
 import type { FormItemProps } from "./types";
 import type { PaginationProps } from "@pureadmin/table";
 import { deviceDetection } from "@pureadmin/utils";
-import { reactive, ref, onMounted, h, toRaw } from "vue";
+import { reactive, ref, onMounted, h, toRaw, computed } from "vue";
 import { usePublicHooks } from "@/views/system/hooks";
 import { addUser, updateUser, getUserList, deleteUser } from "@/api/user/list";
+import { ElForm, ElInput, ElFormItem, ElProgress } from "element-plus";
+import ReCropperPreview from "@/components/ReCropperPreview/index";
 export function useUserList() {
   const pagination = reactive<PaginationProps>({
     total: 0,
@@ -31,8 +33,38 @@ export function useUserList() {
   const isLinkage = ref(false);
   const switchLoadMap = ref({});
   const { switchStyle } = usePublicHooks();
+  const buttonClass = computed(() => {
+    return [
+      "!h-[20px]",
+      "reset-margin",
+      "!text-gray-500",
+      "dark:!text-white",
+      "dark:hover:!text-primary"
+    ];
+  });
+  const pwdRuleFormRef = ref();
+  // 重置的新密码
+  const pwdForm = reactive({
+    newPwd: ""
+  });
+  const pwdProgress = [
+    { color: "#e74242", text: "非常弱" },
+    { color: "#EFBD47", text: "弱" },
+    { color: "#ffa500", text: "一般" },
+    { color: "#1bbf1b", text: "强" },
+    { color: "#008000", text: "非常强" }
+  ];
+  // 当前密码强度（0-4）
+  const curScore = ref();
+  // 头像
+  const cropRef = ref();
 
   const columns: TableColumnList = [
+    {
+      label: "勾选列", // 如果需要表格多选，此处label必须设置
+      type: "selection",
+      fixed: "left"
+    },
     {
       label: "用户名",
       prop: "username",
@@ -95,6 +127,7 @@ export function useUserList() {
       prop: "createTime",
       minWidth: 110,
       width: 120,
+      showOverflowTooltip: true,
       formatter: ({ createTime }) =>
         dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
@@ -279,7 +312,133 @@ export function useUserList() {
       }
     });
   }
-  onMounted(async () => {
+  /** 上传头像 */
+  function handleUpload(row) {
+    addDialog({
+      title: "裁剪、上传头像",
+      width: "40%",
+      closeOnClickModal: false,
+      fullscreen: deviceDetection(),
+      contentRenderer: () =>
+        h(ReCropperPreview, {
+          ref: cropRef,
+          imgSrc: row.avatar,
+          onCropper: info => {
+            console.log("裁剪后的图片信息：", info);
+          }
+        }),
+      beforeSure: done => {
+        console.log("裁剪后的图片信息：");
+        // 根据实际业务使用avatarInfo.value和row里的某些字段去调用上传头像接口即可
+        done(); // 关闭弹框
+        onSearch(); // 刷新表格数据
+      },
+      closeCallBack: () => cropRef.value.hidePopover()
+    });
+  }
+  /** 重置密码 */
+  function handlePasswordReset(row) {
+    addDialog({
+      title: `重置 ${row.username} 用户的密码`,
+      width: "30%",
+      draggable: true,
+      closeOnClickModal: false,
+      fullscreen: deviceDetection(),
+      contentRenderer: () => (
+        <>
+          <ElForm ref={pwdRuleFormRef} model={pwdForm}>
+            <ElFormItem
+              prop="newPwd"
+              rules={[
+                {
+                  required: true,
+                  message: "请输入新密码",
+                  trigger: "blur"
+                }
+              ]}
+            >
+              <ElInput
+                clearable
+                show-password
+                type="password"
+                v-model={pwdForm.newPwd}
+                placeholder="请输入新密码"
+              />
+            </ElFormItem>
+          </ElForm>
+          <div class="mt-4 flex mb-4">
+            {pwdProgress.map(({ color, text }, idx) => (
+              <div
+                class="w-[19vw]"
+                style={{ marginLeft: idx !== 0 ? "4px" : 0 }}
+              >
+                <ElProgress
+                  striped
+                  striped-flow
+                  duration={curScore.value === idx ? 6 : 0}
+                  percentage={curScore.value >= idx ? 100 : 0}
+                  color={color}
+                  stroke-width={10}
+                  show-text={false}
+                />
+                <p
+                  class="text-center"
+                  style={{ color: curScore.value === idx ? color : "" }}
+                >
+                  {text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </>
+      ),
+      closeCallBack: () => (pwdForm.newPwd = ""),
+      beforeSure: done => {
+        pwdRuleFormRef.value.validate(valid => {
+          if (valid) {
+            // 表单规则校验通过
+            toast(`已成功重置 ${row.username} 用户的密码`, {
+              type: "success"
+            });
+            console.log(pwdForm.newPwd);
+            // 根据实际业务使用pwdForm.newPwd和row里的某些字段去调用重置用户密码接口即可
+            done(); // 关闭弹框
+            onSearch(); // 刷新表格数据
+          }
+        });
+      }
+    });
+  }
+
+  /** 分配角色 */
+  async function handleRole(row) {
+    // 选中的角色列表
+    // const ids = (await getRoleIds({ userId: row.id })).data ?? [];
+    // addDialog({
+    //   title: `分配 ${row.username} 用户的角色`,
+    //   props: {
+    //     formInline: {
+    //       username: row?.username ?? "",
+    //       nickname: row?.nickname ?? "",
+    //       roleOptions: roleOptions.value ?? [],
+    //       ids
+    //     }
+    //   },
+    //   width: "400px",
+    //   draggable: true,
+    //   fullscreen: deviceDetection(),
+    //   fullscreenIcon: true,
+    //   closeOnClickModal: false,
+    //   contentRenderer: () => h(roleForm),
+    //   beforeSure: (done, { options }) => {
+    //     const curData = options.props.formInline as RoleFormItemProps;
+    //     console.log("curIds", curData.ids);
+    //     // 根据实际业务使用curData.ids和row里的某些字段去调用修改角色接口即可
+    //     done(); // 关闭弹框
+    //   }
+    // });
+  }
+  onMounted(() => {
     onSearch();
   });
 
@@ -292,12 +451,16 @@ export function useUserList() {
     dataList,
     isLinkage,
     pagination,
+    buttonClass,
     onSearch,
     resetForm,
     openDialog,
     handleDelete,
     handleSizeChange,
     handleCurrentChange,
-    handleSelectionChange
+    handleSelectionChange,
+    handleUpload,
+    handlePasswordReset,
+    handleRole
   };
 }

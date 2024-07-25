@@ -10,8 +10,10 @@ import EditPen from "@iconify-icons/ep/edit-pen";
 import Refresh from "@iconify-icons/ep/refresh";
 import Menu from "@iconify-icons/ep/menu";
 import AddFill from "@iconify-icons/ri/add-circle-line";
-import Close from "@iconify-icons/ep/close";
-import Check from "@iconify-icons/ep/check";
+import Upload from "@iconify-icons/ri/upload-line";
+import Role from "@iconify-icons/ri/admin-line";
+import Password from "@iconify-icons/ri/lock-password-line";
+import More from "@iconify-icons/ep/more-filled";
 
 defineOptions({
   name: "SystemUserList"
@@ -27,13 +29,17 @@ const {
   columns,
   dataList,
   pagination,
+  buttonClass,
   onSearch,
   resetForm,
   openDialog,
   handleDelete,
   handleSizeChange,
   handleCurrentChange,
-  handleSelectionChange
+  handleSelectionChange,
+  handleUpload,
+  handlePasswordReset,
+  handleRole
 } = useUserList();
 </script>
 
@@ -119,7 +125,6 @@ const {
             ref="tableRef"
             row-key="id"
             align-whole="center"
-            showOverflowTooltip
             table-layout="auto"
             :loading="loading"
             :size="size"
@@ -158,6 +163,55 @@ const {
               >
                 删除
               </el-button>
+              <el-dropdown>
+                <el-button
+                  class="ml-3 mt-[2px]"
+                  link
+                  type="primary"
+                  :size="size"
+                  :icon="useRenderIcon(More)"
+                />
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item>
+                      <el-button
+                        :class="buttonClass"
+                        link
+                        type="primary"
+                        :size="size"
+                        :icon="useRenderIcon(Upload)"
+                        @click="handleUpload(row)"
+                      >
+                        上传头像
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-button
+                        :class="buttonClass"
+                        link
+                        type="primary"
+                        :size="size"
+                        :icon="useRenderIcon(Password)"
+                        @click="handlePasswordReset(row)"
+                      >
+                        重置密码
+                      </el-button>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-button
+                        :class="buttonClass"
+                        link
+                        type="primary"
+                        :size="size"
+                        :icon="useRenderIcon(Role)"
+                        @click="handleRole(row)"
+                      >
+                        分配角色
+                      </el-button>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </template>
           </pure-table>
         </template>
