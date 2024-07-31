@@ -310,7 +310,6 @@ export function useDictData() {
       ),
       beforeSure: async done => {
         const selectedIds = curSelected.map(item => item.id);
-        console.log("selectedIds", curSelected);
         const res = await deleteDictData(selectedIds);
         if (res.code == "H200") {
           toast(`删除成功`, {
