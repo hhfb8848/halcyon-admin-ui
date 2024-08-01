@@ -27,7 +27,6 @@ export function useFileList() {
   const formRef = ref();
   const dataList = ref([]);
   const loading = ref(true);
-  const uploadLoading = ref(false);
   const columns: TableColumnList = [
     {
       label: "文件名",
@@ -211,10 +210,16 @@ export function useFileList() {
       contentRenderer: ({ options, index }) =>
         h(editForm, {
           ref: formRef,
-          onUploadSuccess: () => {
-            uploadLoading.value = false;
-            closeDialog(options, index);
-            onSearch();
+          onUploadResult: isSuccess => {
+            console.log("options", options, index);
+            if (isSuccess) {
+              closeDialog(options, index);
+              onSearch();
+            } else {
+              options.footerButtons.forEach(button => {
+                button.loading = false;
+              });
+            }
           }
         }),
       footerButtons: [

@@ -18,3 +18,9 @@ export const updateUser = (data?: object) => {
 export const deleteUser = (data: object) => {
   return http.request<any>("delete", baseUrlApi(`/sysUser`), { data });
 };
+/** 重置密码 */
+export const resetPassword = (data?: object) => {
+  return http.request<any>("put", baseUrlApi("/sysUser/resetPassword"), {
+    data
+  });
+};

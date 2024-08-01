@@ -14,7 +14,7 @@ import { listSimpleMenu } from "@/api/menu";
 import { handleTree } from "@/utils/tree";
 import { isAllEmpty } from "@pureadmin/utils";
 import { useMenu } from "@/views/system/menu/utils/hook";
-import { listMenuIdByRoleId, assignForRole } from "@/api/role-menu/role-menu";
+import { listMenuIdByRoleId, assignForRole } from "@/api/permission/permission";
 defineOptions({
   name: "SystemRoleMenu"
 });

@@ -19,3 +19,8 @@ export const updateRole = (data?: object) => {
 export const deleteRole = (id: number) => {
   return http.request<any>("delete", baseUrlApi(`/sysRole/${id}`));
 };
+
+/** 获取所有角色 */
+export const listAllSimpleRole = (params?: object) => {
+  return http.request<any>("get", baseUrlApi("/sysRole/listAll"), { params });
+};

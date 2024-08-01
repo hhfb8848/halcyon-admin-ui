@@ -26,5 +26,15 @@ interface FormItemProps {
 interface FormProps {
   formInline: FormItemProps;
 }
-
-export type { FormItemProps, FormProps };
+// 分配角色
+interface RoleFormItemProps {
+  userId: number;
+  username: string;
+  /** 选中的角色列表 */
+  roleIds: Record<number, unknown>[];
+  allRoles: { id: number; roleName: string }[];
+}
+interface RoleFormProps {
+  formInline: RoleFormItemProps;
+}
+export type { FormItemProps, FormProps, RoleFormItemProps, RoleFormProps };

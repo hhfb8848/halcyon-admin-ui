@@ -5,13 +5,29 @@ import { addDialog } from "@/components/ReDialog";
 import { showDialog } from "@/components/HalcyonDialog";
 import type { FormItemProps } from "./types";
 import type { PaginationProps } from "@pureadmin/table";
-import { deviceDetection } from "@pureadmin/utils";
-import { reactive, ref, onMounted, h, toRaw, computed } from "vue";
+import { isAllEmpty, deviceDetection, isEqualArray } from "@pureadmin/utils";
+import { zxcvbn } from "@zxcvbn-ts/core";
+import { reactive, ref, onMounted, h, toRaw, computed, watch } from "vue";
 import { usePublicHooks } from "@/views/system/hooks";
-import { addUser, updateUser, getUserList, deleteUser } from "@/api/user/list";
+import roleForm from "../form/role.vue";
+import {
+  addUser,
+  updateUser,
+  getUserList,
+  deleteUser,
+  resetPassword
+} from "@/api/user/list";
 import { ElForm, ElInput, ElFormItem, ElProgress } from "element-plus";
 import ReCropperPreview from "@/components/ReCropperPreview/index";
+import { useUpload } from "@/utils/upload/upload";
+import { REGEXP_PWD } from "./rule";
+import {
+  getRoleIdsByUserId,
+  assignRoleForUser
+} from "@/api/permission/permission";
+import { listAllSimpleRole } from "@/api/role/role";
 export function useUserList() {
+  const { uploadFileByBack } = useUpload();
   const pagination = reactive<PaginationProps>({
     total: 0,
     pageSize: 10,
@@ -45,7 +61,7 @@ export function useUserList() {
   const pwdRuleFormRef = ref();
   // 重置的新密码
   const pwdForm = reactive({
-    newPwd: ""
+    password: ""
   });
   const pwdProgress = [
     { color: "#e74242", text: "非常弱" },
@@ -58,17 +74,16 @@ export function useUserList() {
   const curScore = ref();
   // 头像
   const cropRef = ref();
+  // 文件信息
+  const fileInfo = ref();
+
+  const allRoles = ref([]);
 
   const columns: TableColumnList = [
     {
-      label: "勾选列", // 如果需要表格多选，此处label必须设置
-      type: "selection",
-      fixed: "left"
-    },
-    {
       label: "用户名",
       prop: "username",
-      width: 200,
+      width: 150,
       fixed: "left"
     },
     {
@@ -76,6 +91,21 @@ export function useUserList() {
       prop: "nickname",
       width: 100,
       fixed: "left"
+    },
+    {
+      label: "头像",
+      prop: "avatar",
+      width: 100,
+      cellRenderer: ({ row }) => (
+        <el-image
+          lazy
+          style="width: 50px; height: 50px;border-radius: 50%"
+          src={row.avatar}
+          preview-src-list={[row.avatar]}
+          preview-teleported
+          fit="cover"
+        />
+      )
     },
     {
       label: "邮箱",
@@ -183,7 +213,6 @@ export function useUserList() {
         onSearch();
       },
       closeCallBack: ({ args }) => {
-        console.log("closeCallBack", args);
         if (args?.command !== "sure") {
           row.status === 0 ? (row.status = 1) : (row.status = 0);
         }
@@ -324,14 +353,36 @@ export function useUserList() {
           ref: cropRef,
           imgSrc: row.avatar,
           onCropper: info => {
-            console.log("裁剪后的图片信息：", info);
+            fileInfo.value = info;
           }
         }),
       beforeSure: done => {
-        console.log("裁剪后的图片信息：");
-        // 根据实际业务使用avatarInfo.value和row里的某些字段去调用上传头像接口即可
-        done(); // 关闭弹框
-        onSearch(); // 刷新表格数据
+        const file = new File([fileInfo.value.blob], fileInfo.value.info.name, {
+          type: fileInfo.value.blob.type
+        });
+        uploadFileByBack(file)
+          .then(async (res: any) => {
+            if (res.code == "H200") {
+              row.avatar = res.data;
+              const updateRes = await updateUser(row);
+              if (updateRes.code == "H200") {
+                toast(`修改成功`, {
+                  type: "success"
+                });
+              } else {
+                toast(updateRes.message, { type: "error" });
+              }
+            } else {
+              toast(res.message, { type: "error" });
+            }
+          })
+          .catch(err => {
+            toast(err.message, { type: "error", duration: 3000 });
+          })
+          .finally(() => {
+            done(); // 关闭弹框
+            onSearch(); // 刷新表格数据
+          });
       },
       closeCallBack: () => cropRef.value.hidePopover()
     });
@@ -348,20 +399,28 @@ export function useUserList() {
         <>
           <ElForm ref={pwdRuleFormRef} model={pwdForm}>
             <ElFormItem
-              prop="newPwd"
-              rules={[
-                {
-                  required: true,
-                  message: "请输入新密码",
-                  trigger: "blur"
-                }
-              ]}
+              prop="password"
+              rules={{
+                required: true,
+                validator: (rule, value, callback) => {
+                  if (value === "") {
+                    callback(new Error("请输入密码"));
+                  } else if (!REGEXP_PWD.test(value)) {
+                    callback(
+                      new Error("密码格式必须在6至20个字符之间且不能包含中文")
+                    );
+                  } else {
+                    callback();
+                  }
+                },
+                trigger: "blur"
+              }}
             >
               <ElInput
                 clearable
                 show-password
                 type="password"
-                v-model={pwdForm.newPwd}
+                v-model={pwdForm.password}
                 placeholder="请输入新密码"
               />
             </ElFormItem>
@@ -392,18 +451,25 @@ export function useUserList() {
           </div>
         </>
       ),
-      closeCallBack: () => (pwdForm.newPwd = ""),
+      closeCallBack: () => (pwdForm.password = ""),
       beforeSure: done => {
-        pwdRuleFormRef.value.validate(valid => {
+        pwdRuleFormRef.value.validate(async valid => {
           if (valid) {
             // 表单规则校验通过
             toast(`已成功重置 ${row.username} 用户的密码`, {
               type: "success"
             });
-            console.log(pwdForm.newPwd);
-            // 根据实际业务使用pwdForm.newPwd和row里的某些字段去调用重置用户密码接口即可
-            done(); // 关闭弹框
-            onSearch(); // 刷新表格数据
+            const res = await resetPassword({
+              id: row.id,
+              password: pwdForm.password
+            });
+            if (res.code == "H200") {
+              pwdForm.password = "";
+              done(); // 关闭弹框
+              onSearch(); // 刷新表格数据
+            } else {
+              toast(res.message, { type: "error" });
+            }
           }
         });
       }
@@ -412,35 +478,74 @@ export function useUserList() {
 
   /** 分配角色 */
   async function handleRole(row) {
-    // 选中的角色列表
-    // const ids = (await getRoleIds({ userId: row.id })).data ?? [];
-    // addDialog({
-    //   title: `分配 ${row.username} 用户的角色`,
-    //   props: {
-    //     formInline: {
-    //       username: row?.username ?? "",
-    //       nickname: row?.nickname ?? "",
-    //       roleOptions: roleOptions.value ?? [],
-    //       ids
-    //     }
-    //   },
-    //   width: "400px",
-    //   draggable: true,
-    //   fullscreen: deviceDetection(),
-    //   fullscreenIcon: true,
-    //   closeOnClickModal: false,
-    //   contentRenderer: () => h(roleForm),
-    //   beforeSure: (done, { options }) => {
-    //     const curData = options.props.formInline as RoleFormItemProps;
-    //     console.log("curIds", curData.ids);
-    //     // 根据实际业务使用curData.ids和row里的某些字段去调用修改角色接口即可
-    //     done(); // 关闭弹框
-    //   }
-    // });
+    // 用户所拥有的角色
+    const roleIds = ref([]);
+    addDialog({
+      title: `分配 ${row.username} 用户的角色`,
+
+      width: "450px",
+      draggable: true,
+      fullscreen: deviceDetection(),
+      fullscreenIcon: true,
+      closeOnClickModal: false,
+      contentRenderer: () => h(roleForm),
+      open: async ({ options }) => {
+        // 选中的角色列表
+        const res = await getRoleIdsByUserId(row.id);
+        if (res.code == "H200") {
+          roleIds.value = res.data;
+        } else {
+          toast(res.message, { type: "error" });
+        }
+        // 手动更新
+        options.props.formInline.roleIds = roleIds.value;
+      },
+      props: {
+        formInline: {
+          username: row?.username ?? "",
+          allRoles: allRoles.value,
+          roleIds: roleIds.value
+        }
+      },
+      beforeSure: async (done, { options }) => {
+        const curData = options.props.formInline;
+        if (curData.roleIds.length == 0) {
+          toast("请选择至少一个角色", { type: "error" });
+          return;
+        }
+        if (isEqualArray(curData.roleIds, roleIds.value)) {
+          toast("所选角色未改变", { type: "error" });
+          return;
+        }
+        const { code, message } = await assignRoleForUser({
+          userId: row.id,
+          roleIds: curData.roleIds
+        });
+        if (code == "H200") {
+          toast("角色分配成功", { type: "success" });
+          done(); // 关闭弹框
+          onSearch(); // 刷新表格数据
+        } else {
+          toast(message, { type: "error" });
+        }
+      }
+    });
+  }
+  async function getRoleList() {
+    const res = await listAllSimpleRole();
+    if (res.code == "H200") {
+      allRoles.value = res.data;
+    }
   }
   onMounted(() => {
     onSearch();
+    getRoleList();
   });
+  watch(
+    pwdForm,
+    ({ password }) =>
+      (curScore.value = isAllEmpty(password) ? -1 : zxcvbn(password).score)
+  );
 
   return {
     form,

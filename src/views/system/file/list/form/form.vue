@@ -9,8 +9,8 @@ const props = withDefaults(defineProps<FormProps>(), {
     fileList: []
   })
 });
-const emit = defineEmits(["uploadSuccess"]);
-const { uploadUrl, httpRequest } = useUpload();
+const emit = defineEmits(["uploadResult"]);
+const { uploadUrl, uploadFileByBack } = useUpload();
 const uploadRef = ref();
 const newFormInline = ref(props.formInline);
 const uploadLoading = ref(false);
@@ -19,14 +19,14 @@ function handleFileChange(file: any) {
   uploadLoadForm.value.path = file.name;
 }
 function submitFormError(error: any, uploadFile: any, uploadFiles: any) {
-  console.log(error, uploadFile, uploadFiles);
   toast("上传失败,请您重新上传！", { type: "error" });
   uploadLoading.value = false;
+  emit("uploadResult", false);
 }
 function submitFormSuccess() {
   toast("上传成功！", { type: "success" });
   uploadLoading.value = false;
-  emit("uploadSuccess");
+  emit("uploadResult", true);
 }
 function handleExceed() {
   toast("只允许上传一个文件", { type: "error" });
@@ -48,11 +48,12 @@ defineExpose({ getRef });
       :action="uploadUrl"
       :auto-upload="false"
       :limit="1"
-      :http-request="httpRequest"
+      :http-request="uploadFileByBack"
       :disabled="uploadLoading"
       :on-change="handleFileChange"
       :on-error="submitFormError"
       :on-exceed="handleExceed"
+      :before-upload="() => (uploadLoading = true)"
       :on-success="submitFormSuccess"
     >
       <div class="el-upload__text">

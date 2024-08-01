@@ -6,64 +6,70 @@ import type {
   UploadRequestOptions
 } from "element-plus/es/components/upload/src/upload";
 import axios from "axios";
-
+// 重写ElUpload上传方法
 export const useUpload = () => {
   // 后端上传地址
   const uploadUrl = baseUrlApi("/sysFile/upload");
-  // 是否使用前端直连上传
-  const isClientUpload =
-    UPLOAD_TYPE.CLIENT === import.meta.env.VITE_UPLOAD_TYPE;
-  // 重写ElUpload上传方法
-  const httpRequest = async (options: UploadRequestOptions) => {
-    // 模式二：前端上传
-    if (isClientUpload) {
-      // 1.1 生成文件名称
-      const fileName = await generateFileName(options.file);
-      // 1.2 获取文件预签名地址
-      const presignedInfo = await getFilePreSignedUrl(fileName);
-      // 1.3 上传文件（不能使用 ElUpload 的 ajaxUpload 方法的原因：其使用的是 FormData 上传，Minio 不支持）
-      return axios
-        .put(presignedInfo.uploadUrl, options.file, {
-          headers: {
-            "Content-Type": options.file.type
+
+  // 前端上传
+  const uploadFileByFront = async (options: UploadRequestOptions) => {
+    // 1.1 生成文件名称
+    const fileName = await generateFileName(options.file);
+    // 1.2 获取文件预签名地址
+    const presignedInfo = await getFilePreSignedUrl(fileName);
+    // 1.3 上传文件（不能使用 ElUpload 的 ajaxUpload 方法的原因：其使用的是 FormData 上传，Minio 不支持）
+    return axios
+      .put(presignedInfo.uploadUrl, options.file, {
+        headers: {
+          "Content-Type": options.file.type
+        }
+      })
+      .then(() => {
+        // 1.4. 记录文件信息到后端（异步）
+        const file = {
+          configId: presignedInfo.configId,
+          url: presignedInfo.url,
+          path: fileName,
+          name: options.file.name,
+          type: options.file.type,
+          size: options.file.size
+        };
+        createFile(file);
+        // 通知成功，数据格式保持与后端上传的返回结果一致
+        return { data: presignedInfo.url };
+      });
+  };
+
+  // 后端上传
+  const uploadFileByBack = async (options: UploadRequestOptions | File) => {
+    return new Promise((resolve, reject) => {
+      let fileToUpload: File;
+
+      if ("file" in options) {
+        // options 是 UploadRequestOptions 类型
+        fileToUpload = options.file;
+      } else {
+        // options 是 File 类型
+        fileToUpload = options;
+      }
+      upload({ file: fileToUpload })
+        .then(res => {
+          if (res.code == "H200") {
+            resolve(res);
+          } else {
+            reject(res);
           }
         })
-        .then(() => {
-          // 1.4. 记录文件信息到后端（异步）
-          const file = {
-            configId: presignedInfo.configId,
-            url: presignedInfo.url,
-            path: fileName,
-            name: options.file.name,
-            type: options.file.type,
-            size: options.file.size
-          };
-          createFile(file);
-          // 通知成功，数据格式保持与后端上传的返回结果一致
-          return { data: presignedInfo.url };
+        .catch(res => {
+          reject(res);
         });
-    } else {
-      // 模式一：后端上传
-      // 重写 el-upload httpRequest 文件上传成功会走成功的钩子，失败走失败的钩子
-      return new Promise((resolve, reject) => {
-        upload({ file: options.file })
-          .then(res => {
-            if (res.code == "H200") {
-              resolve(res);
-            } else {
-              reject(res);
-            }
-          })
-          .catch(res => {
-            reject(res);
-          });
-      });
-    }
+    });
   };
 
   return {
     uploadUrl,
-    httpRequest
+    uploadFileByFront,
+    uploadFileByBack
   };
 };
 
@@ -108,9 +114,9 @@ async function generateFileName(file: UploadRawFile) {
 /**
  * 上传类型
  */
-enum UPLOAD_TYPE {
-  // 客户端直接上传（只支持S3服务）
-  CLIENT = "client",
-  // 客户端发送到后端上传
-  SERVER = "server"
-}
+// enum UPLOAD_TYPE {
+//   // 客户端直接上传（只支持S3服务）
+//   CLIENT = "client",
+//   // 客户端发送到后端上传
+//   SERVER = "server"
+// }

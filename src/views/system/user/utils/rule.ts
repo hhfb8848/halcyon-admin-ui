@@ -5,7 +5,7 @@ import type { FormRules } from "element-plus";
 const REGEXP_USERNAME = /^[a-zA-Z0-9_]{4,16}$/;
 
 /** 密码正则（密码格式必须在6至20个字符之间） */
-const REGEXP_PWD = /^.{6,20}$/;
+export const REGEXP_PWD = /^[^\u4e00-\u9fa5]{6,20}$/;
 
 /** 邮箱正则 */
 const REGEXP_EMAIL =
@@ -40,7 +40,7 @@ export const formRules = reactive(<FormRules>{
         if (value === "") {
           callback(new Error("请输入密码"));
         } else if (!REGEXP_PWD.test(value)) {
-          callback(new Error("密码长度必须在6至20个字符之间"));
+          callback(new Error("密码格式必须在6至20个字符之间且不能包含中文"));
         } else {
           callback();
         }

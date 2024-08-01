@@ -96,6 +96,7 @@ export default defineComponent({
 
     let scaleX = 1;
     let scaleY = 1;
+    const fileName = ref("");
 
     const debounceRealTimeCroppered = debounce(realTimeCroppered, 80);
 
@@ -146,10 +147,10 @@ export default defineComponent({
 
     useResizeObserver(tippyElRef, () => handCropper("reset"));
 
-    async function init() {
+    async function init(name?: string) {
       imgEl = unref(imgElRef);
       if (!imgEl) return;
-      console.log("imgEl", imgEl);
+      fileName.value = name || "";
       cropper.value = new Cropper(imgEl, {
         ...defaultOptions,
         ready: () => {
@@ -191,7 +192,11 @@ export default defineComponent({
           emit("cropper", {
             base64: e.target.result,
             blob,
-            info: { size: blob.size, ...cropper.value.getData() }
+            info: {
+              size: blob.size,
+              ...cropper.value.getData(),
+              name: fileName.value
+            }
           });
         };
         fileReader.onerror = () => {
@@ -238,6 +243,7 @@ export default defineComponent({
     }
 
     function beforeUpload(file) {
+      console.log("beforeUpload", file);
       const reader = new FileReader();
       reader.readAsDataURL(file);
       inSrc.value = "";
@@ -245,7 +251,7 @@ export default defineComponent({
         inSrc.value = e.target?.result as string;
       };
       reader.onloadend = () => {
-        init();
+        init(file.name);
       };
       return false;
     }
