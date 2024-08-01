@@ -7,7 +7,6 @@ import {
   getKeyList,
   filterTree,
   constantMenus,
-  filterNoPermissionTree,
   formatFlatteningRoutes
 } from "../utils";
 import { useMultiTagsStoreHook } from "./multiTags";

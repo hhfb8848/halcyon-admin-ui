@@ -7,10 +7,7 @@ import {
   routerArrays,
   storageLocal
 } from "../utils";
-import {
-  getLogin,
-  refreshTokenApi
-} from "@/api/auth";
+import { getLogin, refreshTokenApi } from "@/api/auth";
 import { useMultiTagsStoreHook } from "./multiTags";
 import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
 
@@ -23,8 +20,21 @@ export const useUserStore = defineStore({
     username: storageLocal().getItem<DataInfo<number>>(userKey)?.username ?? "",
     // 昵称
     nickname: storageLocal().getItem<DataInfo<number>>(userKey)?.nickname ?? "",
-    // 页面级别权限
+    // 权限
     roles: storageLocal().getItem<DataInfo<number>>(userKey)?.roles ?? [],
+    // id
+    id: storageLocal().getItem<DataInfo<number>>(userKey)?.id ?? null,
+    // 邮箱
+    email: storageLocal().getItem<DataInfo<number>>(userKey)?.email ?? "",
+    // 手机号
+    phone: storageLocal().getItem<DataInfo<number>>(userKey)?.phone ?? "",
+    // 性别
+    gender: storageLocal().getItem<DataInfo<number>>(userKey)?.gender ?? 0,
+    // 生日
+    birthday:
+      storageLocal().getItem<DataInfo<number>>(userKey)?.birthday ?? null,
+    // 简介
+    intro: storageLocal().getItem<DataInfo<number>>(userKey)?.intro ?? "",
     // 是否勾选了登录页的免登录
     isRemembered: false,
     // 登录页的免登录存储几天，默认7天
@@ -47,6 +57,30 @@ export const useUserStore = defineStore({
     SET_ROLES(roles: Array<string>) {
       this.roles = roles;
     },
+    /** 存储id */
+    SET_ID(id: number) {
+      this.id = id;
+    },
+    /** 存储邮箱 */
+    SET_EMAIL(email: string) {
+      this.email = email;
+    },
+    /** 存储手机号 */
+    SET_PHONE(phone: string) {
+      this.phone = phone;
+    },
+    /** 存储性别 */
+    SET_GENDER(gender: number) {
+      this.gender = gender;
+    },
+    /** 存储生日 */
+    SET_BIRTHDAY(birthday: Date) {
+      this.birthday = birthday;
+    },
+    /** 存储简介 */
+    SET_INTRO(intro: string) {
+      this.intro = intro;
+    },
     /** 存储是否勾选了登录页的免登录 */
     SET_ISREMEMBERED(bool: boolean) {
       this.isRemembered = bool;
@@ -55,12 +89,16 @@ export const useUserStore = defineStore({
     SET_LOGINDAY(value: number) {
       this.loginDay = Number(value);
     },
+    /** 判断是否为自己 */
+    isSelf(id: number) {
+      return this.id == id;
+    },
     /** 登入 */
     async loginByUsername(data) {
       return new Promise<any>((resolve, reject) => {
         getLogin(data)
           .then(data => {
-            if (data?.code =="H200") setToken(data.data);
+            if (data?.code == "H200") setToken(data.data);
             resolve(data);
           })
           .catch(error => {

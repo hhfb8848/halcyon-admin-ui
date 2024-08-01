@@ -37,6 +37,12 @@ export type setType = {
 };
 
 export type userType = {
+  id?: number;
+  email?: string;
+  phone?: string;
+  gender?: number;
+  birthday?: Date;
+  intro?: string;
   avatar?: string;
   username?: string;
   nickname?: string;

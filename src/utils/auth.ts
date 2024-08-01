@@ -15,6 +15,17 @@ export interface DataInfo<T> {
   nickname?: string;
   /** 当前登录用户的角色 */
   roles?: Array<string>;
+  id: number;
+  /** 邮箱 */
+  email?: string;
+  /** 手机号 */
+  phone?: string;
+  /** 性别 */
+  gender?: number;
+  /** 生日 */
+  birthday?: Date;
+  /** 简介 */
+  intro?: string;
 }
 
 export const userKey = "user-info";
@@ -30,8 +41,7 @@ export const multipleTabsKey = "multiple-tabs";
 /** 获取`token` */
 export function getToken(): any {
   // 此处与`TokenKey`相同，此写法解决初始化时`Cookies`中不存在`TokenKey`报错
-  return Cookies.get(TokenKey)
-    
+  return Cookies.get(TokenKey);
 }
 
 /**
@@ -45,32 +55,58 @@ export function setToken(data: DataInfo<Date>) {
   const { accessToken, refreshToken } = data;
   const { isRemembered, loginDay } = useUserStoreHook();
   Cookies.set(TokenKey, accessToken);
-  Cookies.set(
-    multipleTabsKey,
-    "true"
-  );
+  Cookies.set(multipleTabsKey, "true");
 
-  function setUserKey({ avatar, username, nickname, roles }) {
+  function setUserKey({
+    avatar,
+    username,
+    nickname,
+    roles,
+    id,
+    email,
+    phone,
+    gender,
+    birthday,
+    intro
+  }) {
     useUserStoreHook().SET_AVATAR(avatar);
     useUserStoreHook().SET_USERNAME(username);
     useUserStoreHook().SET_NICKNAME(nickname);
     useUserStoreHook().SET_ROLES(roles);
+    useUserStoreHook().SET_ID(id);
+    useUserStoreHook().SET_EMAIL(email);
+    useUserStoreHook().SET_PHONE(phone);
+    useUserStoreHook().SET_GENDER(gender);
+    useUserStoreHook().SET_BIRTHDAY(birthday);
+    useUserStoreHook().SET_INTRO(intro);
     storageLocal().setItem(userKey, {
       refreshToken,
       avatar,
       username,
       nickname,
-      roles
+      roles,
+      id,
+      email,
+      phone,
+      gender,
+      birthday,
+      intro
     });
   }
 
   if (data.username && data.roles) {
-    const { username, roles } = data;
+    const { username, roles, id, email, phone, gender, birthday, intro } = data;
     setUserKey({
       avatar: data?.avatar ?? "",
       username,
       nickname: data?.nickname ?? "",
-      roles
+      roles,
+      id,
+      email,
+      phone,
+      gender,
+      birthday,
+      intro
     });
   } else {
     const avatar =
@@ -81,11 +117,28 @@ export function setToken(data: DataInfo<Date>) {
       storageLocal().getItem<DataInfo<number>>(userKey)?.nickname ?? "";
     const roles =
       storageLocal().getItem<DataInfo<number>>(userKey)?.roles ?? [];
+    const id = storageLocal().getItem<DataInfo<number>>(userKey)?.id ?? null;
+    const email =
+      storageLocal().getItem<DataInfo<number>>(userKey)?.email ?? "";
+    const phone =
+      storageLocal().getItem<DataInfo<number>>(userKey)?.phone ?? "";
+    const gender =
+      storageLocal().getItem<DataInfo<number>>(userKey)?.gender ?? 0;
+    const birthday =
+      storageLocal().getItem<DataInfo<number>>(userKey)?.birthday ?? null;
+    const intro =
+      storageLocal().getItem<DataInfo<number>>(userKey)?.intro ?? "";
     setUserKey({
       avatar,
       username,
       nickname,
-      roles
+      roles,
+      id,
+      email,
+      phone,
+      gender,
+      birthday,
+      intro
     });
   }
 }

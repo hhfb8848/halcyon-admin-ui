@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { formRules } from "../utils/rule";
 import { FormProps } from "../utils/types";
 import { statusOptions, genderOptions } from "../utils/enums";
+import { useUserStoreHook } from "@/store/modules/user";
 const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
     username: "",
@@ -68,7 +69,13 @@ defineExpose({ getRef });
         />
       </el-form-item>
       <el-form-item label="用户状态：" prop="status">
-        <el-radio-group v-model="newFormInline.status">
+        <el-radio-group
+          v-model="newFormInline.status"
+          :disabled="
+            useUserStoreHook().isSelf(newFormInline.id) &&
+            newFormInline.status == 0
+          "
+        >
           <el-radio
             v-for="item in statusOptions"
             :key="item.value"

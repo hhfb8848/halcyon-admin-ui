@@ -10,6 +10,7 @@ import { zxcvbn } from "@zxcvbn-ts/core";
 import { reactive, ref, onMounted, h, toRaw, computed, watch } from "vue";
 import { usePublicHooks } from "@/views/system/hooks";
 import roleForm from "../form/role.vue";
+import { useUserStoreHook } from "@/store/modules/user";
 import {
   addUser,
   updateUser,
@@ -121,6 +122,9 @@ export function useUserList() {
       label: "状态",
       cellRenderer: scope => (
         <el-switch
+          disabled={
+            useUserStoreHook().isSelf(scope.row.id) && scope.row.status === 0
+          }
           size={scope.props.size === "small" ? "small" : "default"}
           loading={switchLoadMap.value[scope.index]?.loading}
           v-model={scope.row.status}
