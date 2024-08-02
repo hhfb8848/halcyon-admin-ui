@@ -30,3 +30,6 @@ export const updateConfigMaster = (id: number) => {
 export const deleteConfig = (id: number) => {
   return http.request<any>("delete", baseUrlApi(`${path}/delete/${id}`));
 };
+export const refreshCache = () => {
+  return http.request<any>("get", baseUrlApi(`${path}/refreshCache`));
+};

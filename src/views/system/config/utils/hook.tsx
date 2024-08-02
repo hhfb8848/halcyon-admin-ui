@@ -11,10 +11,10 @@ import {
   listConfig,
   updateConfig,
   deleteConfig,
-  getConfig
+  getConfig,
+  refreshCache
 } from "@/api/config/config";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
-
 export function useConfig() {
   const searchValue = ref("");
   const formRef = ref();
@@ -161,6 +161,14 @@ export function useConfig() {
       }
     });
   }
+  async function handleRefreshCache() {
+    const res = await refreshCache();
+    if (res.code == "H200") {
+      toast("缓存刷新成功", { type: "success" });
+    } else {
+      toast(res.message, { type: "error" });
+    }
+  }
 
   onMounted(async () => {
     onSearch();
@@ -179,6 +187,7 @@ export function useConfig() {
     handleDeleteItem,
     handleSizeChange,
     handleCurrentChange,
-    handleSelectionChange
+    handleSelectionChange,
+    handleRefreshCache
   };
 }

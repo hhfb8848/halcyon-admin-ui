@@ -8,6 +8,8 @@ import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import AddFill from "@iconify-icons/ri/add-circle-line";
 import { FormItemProps } from "./utils/types";
 import { useConfig } from "./utils/hook";
+
+import Refresh from "@iconify-icons/ep/refresh";
 defineOptions({
   name: "SystemConfig"
 });
@@ -23,16 +25,34 @@ const {
   handleSizeChange,
   handleCurrentChange,
   handleManageItem,
-  handleDeleteItem
+  handleDeleteItem,
+  handleRefreshCache
 } = useConfig();
 </script>
 
 <template>
   <div>
     <div class="w-full flex justify-between mb-4">
-      <el-button :icon="useRenderIcon(AddFill)" @click="openDialog()">
-        新建配置
-      </el-button>
+      <div>
+        <el-button :icon="useRenderIcon(AddFill)" @click="openDialog()">
+          新建配置
+        </el-button>
+        <el-button
+          v-ripple
+          v-optimize="{
+            event: 'click',
+            fn: handleRefreshCache,
+            immediate: true,
+            timeout: 4000
+          }"
+          :icon="useRenderIcon(Refresh)"
+          type="primary"
+          plain
+        >
+          刷新缓存
+        </el-button>
+      </div>
+
       <el-input
         v-model="form.configName"
         v-optimize="{ event: 'input', fn: onSearch, timeout: 400 }"
