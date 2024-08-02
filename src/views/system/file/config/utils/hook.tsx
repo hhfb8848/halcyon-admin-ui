@@ -58,13 +58,7 @@ export function useFileConfig() {
     });
   }
   async function handleManageItem(row) {
-    console.log("handleManageItem", row);
-    const res = await getConfig(row.id);
-    if (res.code == "H200") {
-      openDialog("修改", res.data);
-    } else {
-      toast(res.message, { type: "error" });
-    }
+    openDialog("修改", row);
   }
   function handleSetMaster(row) {
     showDialog("提示", {
@@ -126,6 +120,7 @@ export function useFileConfig() {
   };
 
   function openDialog(title = "新增", row?: FormItemProps) {
+    const rowDetail = ref({} as FormItemProps);
     addDialog({
       title: `${title}配置`,
       props: {
@@ -157,6 +152,18 @@ export function useFileConfig() {
       fullscreenIcon: true,
       closeOnClickModal: false,
       contentRenderer: () => h(editForm, { ref: formRef }),
+      open: async ({ options }) => {
+        if (title !== "新增") {
+          const res = await getConfig(row.id);
+          if (res.code == "H200") {
+            rowDetail.value = res.data;
+          } else {
+            toast(res.message, { type: "error" });
+          }
+          // 手动更新
+          options.props.formInline.config = rowDetail.value.config;
+        }
+      },
       beforeSure: (done, { options }) => {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
