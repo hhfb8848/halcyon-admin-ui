@@ -2,6 +2,7 @@ import { http } from "@/utils/http";
 import { baseUrlApi } from "../utils";
 
 const path = "/sysConfig";
+const platformConfigKey = "admin.platform.theme";
 /** 新增配置 */
 export const addConfig = (data?: object) => {
   return http.request<any>("post", baseUrlApi(`${path}/create`), { data });
@@ -32,4 +33,11 @@ export const deleteConfig = (id: number) => {
 };
 export const refreshCache = () => {
   return http.request<any>("get", baseUrlApi(`${path}/refreshCache`));
+};
+
+export const getPlatformConfig = () => {
+  return http.request<any>(
+    "get",
+    baseUrlApi(`${path}/getByKey/${platformConfigKey}`)
+  );
 };
