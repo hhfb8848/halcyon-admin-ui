@@ -1,13 +1,7 @@
 <script setup lang="ts">
-import { listConfig } from "@/api/file/config";
-import { message } from "@/utils/message";
-import { ElMessageBox } from "element-plus";
-import { ref, onMounted, nextTick } from "vue";
 import ListCard from "./components/ListCard.vue";
-import ListDialogForm from "./components/ListDialogForm.vue";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import AddFill from "@iconify-icons/ri/add-circle-line";
-import { FormItemProps } from "./utils/types";
 import { useFileConfig } from "./utils/hook";
 defineOptions({
   name: "SystemFileConfig"
@@ -54,29 +48,13 @@ const {
     </div>
     <div v-loading="loading">
       <el-empty
-        v-show="
-          dataList
-            .slice(
-              pagination.pageSize * (pagination.currentPage - 1),
-              pagination.pageSize * pagination.currentPage
-            )
-            .filter(v =>
-              v.name.toLowerCase().includes(searchValue.toLowerCase())
-            ).length === 0
-        "
+        v-show="dataList.length === 0"
         :description="`${dataList.length > 0 ? '配置未找到' : '暂无配置'}`"
       />
       <template v-if="pagination.total > 0">
         <el-row :gutter="16">
           <el-col
-            v-for="(fileConfig, index) in dataList
-              .slice(
-                pagination.pageSize * (pagination.currentPage - 1),
-                pagination.pageSize * pagination.currentPage
-              )
-              .filter(v =>
-                v.name.toLowerCase().includes(searchValue.toLowerCase())
-              )"
+            v-for="(fileConfig, index) in dataList"
             :key="index"
             :xs="24"
             :sm="12"

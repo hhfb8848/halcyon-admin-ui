@@ -11,9 +11,8 @@ import {
   listConfig,
   updateConfig,
   deleteConfig,
-  updateConfigMaster,
   getConfig
-} from "@/api/file/config";
+} from "@/api/config/config";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 
 export function useConfig() {
@@ -28,7 +27,7 @@ export function useConfig() {
     background: true
   });
   const form = reactive({
-    name: "",
+    configName: "",
     size: pagination.pageSize,
     current: pagination.currentPage
   });
@@ -36,17 +35,17 @@ export function useConfig() {
     showDialog("警告", {
       contentRenderer: () => (
         <p style="text-align: center;margin-bottom:20px">
-          确认要设置该配置：
+          确认要将该配置：
           <strong style="color:var(--el-color-danger);margin:0 5px">
-            {row.name}
+            {row.configName}
           </strong>
-          为主配置吗?
+          删除吗?
         </p>
       ),
       beforeSure: async done => {
         const res = await deleteConfig(row.id);
         if (res.code == "H200") {
-          toast(`已将"${row.name}设为主配置`, {
+          toast(`已将"${row.configName}删除`, {
             type: "success"
           });
         } else {
@@ -65,32 +64,6 @@ export function useConfig() {
       toast(res.message, { type: "error" });
     }
   }
-  function handleSetMaster(row) {
-    showDialog("提示", {
-      contentRenderer: () => (
-        <p style="text-align: center;margin-bottom:20px">
-          确认要设置该配置：
-          <strong style="color:var(--el-color-warning);margin:0 5px">
-            {row.name}
-          </strong>
-          为主配置吗?
-        </p>
-      ),
-      beforeSure: async done => {
-        const res = await updateConfigMaster(row.id);
-        if (res.code == "H200") {
-          toast(`已将"${row.name}设为主配置`, {
-            type: "success"
-          });
-        } else {
-          toast(res.message, { type: "error" });
-        }
-        done(); // 关闭弹框
-        onSearch();
-      }
-    });
-  }
-
   function handleSizeChange(val: number) {
     pagination.currentPage = 1;
     pagination.pageSize = val;
@@ -136,7 +109,7 @@ export function useConfig() {
           remark: row?.remark ?? ""
         }
       },
-      width: "40%",
+      width: "45%",
       top: "5vh",
       draggable: true,
       fullscreen: deviceDetection(),
@@ -194,7 +167,6 @@ export function useConfig() {
     openDialog,
     handleManageItem,
     handleDeleteItem,
-    handleSetMaster,
     handleSizeChange,
     handleCurrentChange,
     handleSelectionChange

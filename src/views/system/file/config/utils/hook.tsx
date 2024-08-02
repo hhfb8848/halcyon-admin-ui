@@ -36,17 +36,17 @@ export function useFileConfig() {
     showDialog("警告", {
       contentRenderer: () => (
         <p style="text-align: center;margin-bottom:20px">
-          确认要设置该配置：
+          确认要将该配置：
           <strong style="color:var(--el-color-danger);margin:0 5px">
             {row.name}
           </strong>
-          为主配置吗?
+          删除吗?
         </p>
       ),
       beforeSure: async done => {
         const res = await deleteConfig(row.id);
         if (res.code == "H200") {
-          toast(`已将"${row.name}设为主配置`, {
+          toast(`已将"${row.name}删除`, {
             type: "success"
           });
         } else {
@@ -78,7 +78,7 @@ export function useFileConfig() {
         </p>
       ),
       beforeSure: async done => {
-        const res = await updateConfigMaster({ id: row.id });
+        const res = await updateConfigMaster(row.id);
         if (res.code == "H200") {
           toast(`已将"${row.name}设为主配置`, {
             type: "success"

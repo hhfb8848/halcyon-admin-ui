@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, PropType } from "vue";
 import More2Fill from "@iconify-icons/ri/more-2-fill";
+import Setting from "@iconify-icons/ep/setting";
 import { FormItemProps } from "../utils/types";
 defineOptions({
   name: "ReCard"
@@ -12,10 +13,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(["manage-config", "delete-config", "set-master"]);
-const handleClickMaster = (config: FormItemProps) => {
-  emit("set-master", config);
-};
+const emit = defineEmits(["manage-config", "delete-config"]);
 const handleClickManage = (config: FormItemProps) => {
   emit("manage-config", config);
 };
@@ -29,9 +27,17 @@ const handleClickDelete = (config: FormItemProps) => {
     <div class="list-card-item_detail bg-bg_color">
       <el-row justify="space-between">
         <div class="list-card-item_detail--logo">
-          <IconifyIconOnline icon="token:dbr" />
+          <IconifyIconOffline :icon="Setting" />
         </div>
         <div class="list-card-item_detail--operation">
+          <el-tag
+            v-if="config.type == 1"
+            color="#00a870"
+            effect="dark"
+            class="mx-1 list-card-item_detail--operation--tag"
+          >
+            系统内置
+          </el-tag>
           <el-dropdown trigger="click">
             <IconifyIconOffline :icon="More2Fill" class="text-[24px]" />
             <template #dropdown>
@@ -39,7 +45,10 @@ const handleClickDelete = (config: FormItemProps) => {
                 <el-dropdown-item @click="handleClickManage(config)">
                   编辑
                 </el-dropdown-item>
-                <el-dropdown-item @click="handleClickDelete(config)">
+                <el-dropdown-item
+                  :disabled="config.type == 1"
+                  @click="handleClickDelete(config)"
+                >
                   删除
                 </el-dropdown-item>
               </el-dropdown-menu>

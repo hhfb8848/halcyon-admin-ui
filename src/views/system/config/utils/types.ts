@@ -5,6 +5,7 @@ interface FormItemProps {
   configName: string;
   configKey: string;
   configValue: string;
+  type?: number;
   remark: string;
 }
 interface FormProps {

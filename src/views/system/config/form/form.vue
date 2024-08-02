@@ -38,12 +38,17 @@ defineExpose({ getRef });
       />
     </el-form-item>
     <el-form-item label="参数键名：" prop="configKey">
-      <el-input v-model="newFormInline.configKey" placeholder="参数键名" />
+      <el-input
+        v-model="newFormInline.configKey"
+        placeholder="参数键名"
+        :disabled="newFormInline.id !== null"
+      />
     </el-form-item>
     <el-form-item label="参数键值：" prop="configValue">
       <el-input
         v-model="newFormInline.configValue"
         type="textarea"
+        autosize
         placeholder="请输入参数键值"
       />
     </el-form-item>

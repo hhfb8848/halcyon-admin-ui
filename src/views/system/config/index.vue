@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { listConfig } from "@/api/config";
 import { message } from "@/utils/message";
 import { ElMessageBox } from "element-plus";
 import { ref, onMounted, nextTick } from "vue";
@@ -24,8 +23,7 @@ const {
   handleSizeChange,
   handleCurrentChange,
   handleManageItem,
-  handleDeleteItem,
-  handleSetMaster
+  handleDeleteItem
 } = useConfig();
 </script>
 
@@ -36,7 +34,7 @@ const {
         新建配置
       </el-button>
       <el-input
-        v-model="form.name"
+        v-model="form.configName"
         v-optimize="{ event: 'input', fn: onSearch, timeout: 400 }"
         style="width: 300px"
         placeholder="请输入配置名称"
@@ -54,29 +52,13 @@ const {
     </div>
     <div v-loading="loading">
       <el-empty
-        v-show="
-          dataList
-            .slice(
-              pagination.pageSize * (pagination.currentPage - 1),
-              pagination.pageSize * pagination.currentPage
-            )
-            .filter(v =>
-              v.name.toLowerCase().includes(searchValue.toLowerCase())
-            ).length === 0
-        "
+        v-show="dataList.length === 0"
         :description="`${dataList.length > 0 ? '配置未找到' : '暂无配置'}`"
       />
       <template v-if="pagination.total > 0">
         <el-row :gutter="16">
           <el-col
-            v-for="(fileConfig, index) in dataList
-              .slice(
-                pagination.pageSize * (pagination.currentPage - 1),
-                pagination.pageSize * pagination.currentPage
-              )
-              .filter(v =>
-                v.name.toLowerCase().includes(searchValue.toLowerCase())
-              )"
+            v-for="(config, index) in dataList"
             :key="index"
             :xs="24"
             :sm="12"
@@ -85,10 +67,9 @@ const {
             :xl="4"
           >
             <ListCard
-              :fileConfig="fileConfig"
-              @set-master="handleSetMaster"
-              @delete-fileConfig="handleDeleteItem"
-              @manage-fileConfig="handleManageItem"
+              :config="config"
+              @delete-config="handleDeleteItem"
+              @manage-config="handleManageItem"
             />
           </el-col>
         </el-row>
