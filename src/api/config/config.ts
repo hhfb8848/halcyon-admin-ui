@@ -1,7 +1,7 @@
 import { http } from "@/utils/http";
 import { baseUrlApi } from "../utils";
 
-const path = "/sysFileConfig";
+const path = "/sysConfig";
 /** 新增配置 */
 export const addConfig = (data?: object) => {
   return http.request<any>("post", baseUrlApi(`${path}/create`), { data });

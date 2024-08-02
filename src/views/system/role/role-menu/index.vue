@@ -10,7 +10,7 @@ import {
 import ElTreeLine from "@/components/ReTreeLine";
 import { extractPathList, deleteChildren } from "@/utils/tree";
 import { getKeyList } from "@pureadmin/utils";
-import { listSimpleMenu } from "@/api/menu";
+import { listSimpleMenu } from "@/api/menu/menu";
 import { handleTree } from "@/utils/tree";
 import { isAllEmpty } from "@pureadmin/utils";
 import { useMenu } from "@/views/system/menu/utils/hook";

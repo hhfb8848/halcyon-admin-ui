@@ -5,7 +5,7 @@ import { addDialog } from "@/components/ReDialog";
 import { reactive, ref, onMounted, h } from "vue";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { cloneDeep, isAllEmpty, deviceDetection } from "@pureadmin/utils";
-import { addMenu, listMenu, updateMenu } from "@/api/menu";
+import { addMenu, listMenu, updateMenu } from "@/api/menu/menu";
 import { menuTypeOptions } from "./enums";
 export function useMenu() {
   const form = reactive({

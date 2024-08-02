@@ -1,11 +1,11 @@
 import { http } from "@/utils/http";
 import { baseUrlApi } from "../utils";
-
+const path = "/sysFile";
 /** 模式一的文件上传，后端上传 */
 export const upload = (data?: object) => {
   return http.request<any>(
     "post",
-    baseUrlApi("/sysFile/upload"),
+    baseUrlApi(`${path}/upload`),
     { data },
     {
       headers: {
@@ -16,26 +16,24 @@ export const upload = (data?: object) => {
 };
 /** 文件列表 */
 export const listFile = (params?: object) => {
-  return http.request<any>("get", baseUrlApi("/sysFile/list"), {
+  return http.request<any>("get", baseUrlApi(`${path}/list`), {
     params
   });
 };
 
 /** 删除文件 */
-export const deleteFile = (params: object) => {
-  return http.request<any>("delete", baseUrlApi(`/sysFile/delete`), {
-    params
-  });
+export const deleteFile = (id: number) => {
+  return http.request<any>("delete", baseUrlApi(`${path}/delete/${id}`));
 };
 
 /** 模式二的文件上传，前端直接上传云存储 */
 export const getFilePreSignedUrl = (path: string) => {
-  return http.request<any>("get", baseUrlApi(`/sysFile/pre-signed-url`), {
+  return http.request<any>("get", baseUrlApi("/sysFile/getPreSignedUrl"), {
     params: {
       path
     }
   });
 };
 export const createFile = (data?: object) => {
-  return http.request<any>("post", baseUrlApi("/sysFile/create"), { data });
+  return http.request<any>("post", baseUrlApi(`${path}/create`), { data });
 };

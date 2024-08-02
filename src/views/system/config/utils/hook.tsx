@@ -16,7 +16,7 @@ import {
 } from "@/api/file/config";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 
-export function useFileConfig() {
+export function useConfig() {
   const searchValue = ref("");
   const formRef = ref();
   const dataList = ref([]);
@@ -58,7 +58,6 @@ export function useFileConfig() {
     });
   }
   async function handleManageItem(row) {
-    console.log("handleManageItem", row);
     const res = await getConfig(row.id);
     if (res.code == "H200") {
       openDialog("修改", res.data);
@@ -78,7 +77,7 @@ export function useFileConfig() {
         </p>
       ),
       beforeSure: async done => {
-        const res = await updateConfigMaster({ id: row.id });
+        const res = await updateConfigMaster(row.id);
         if (res.code == "H200") {
           toast(`已将"${row.name}设为主配置`, {
             type: "success"
@@ -131,22 +130,9 @@ export function useFileConfig() {
       props: {
         formInline: {
           id: row?.id ?? null,
-          name: row?.name ?? "",
-          storage: row?.storage ?? null,
-          master: row?.master ?? false,
-          config: row?.config ?? {
-            basePath: "",
-            host: "",
-            port: null,
-            username: "",
-            password: "",
-            mode: "",
-            endpoint: "",
-            bucket: "",
-            accessKey: "",
-            accessSecret: "",
-            domain: ""
-          },
+          configName: row?.configName ?? "",
+          configKey: row?.configKey ?? "",
+          configValue: row?.configValue ?? "",
           remark: row?.remark ?? ""
         }
       },
@@ -161,7 +147,7 @@ export function useFileConfig() {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;
         function chores() {
-          message(`您${title}了配置名称为${curData.name}的这条数据`, {
+          message(`您${title}了配置名称为${curData.configName}的这条数据`, {
             type: "success"
           });
           done(); // 关闭弹框

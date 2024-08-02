@@ -153,6 +153,7 @@ const {
                 修改
               </el-button>
               <el-button
+                :disabled="row.userCount > 0"
                 class="reset-margin"
                 link
                 type="danger"

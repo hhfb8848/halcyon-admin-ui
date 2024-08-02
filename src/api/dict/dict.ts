@@ -1,21 +1,21 @@
 import { http } from "@/utils/http";
 import { baseUrlApi } from "../utils";
-
+const path = "/sysDict";
 /** 新增字典 */
 export const addDict = (data?: object) => {
-  return http.request<any>("post", baseUrlApi("/sysDict"), { data });
+  return http.request<any>("post", baseUrlApi(`${path}/create`), { data });
 };
 /** 字典列表 */
 export const listDict = (params?: object) => {
-  return http.request<any>("get", baseUrlApi("/sysDict/list"), { params });
+  return http.request<any>("get", baseUrlApi(`${path}/list`), { params });
 };
 
 /** 修改字典 */
 export const updateDict = (data?: object) => {
-  return http.request<any>("put", baseUrlApi("/sysDict"), { data });
+  return http.request<any>("put", baseUrlApi(`${path}/update`), { data });
 };
 
 /** 删除字典 */
 export const deleteDict = (id: number) => {
-  return http.request<any>("delete", baseUrlApi(`/sysDict/${id}`));
+  return http.request<any>("delete", baseUrlApi(`/sysDict/delete/${id}`));
 };

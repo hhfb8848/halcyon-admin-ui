@@ -127,9 +127,7 @@ export function useFileList() {
         </p>
       ),
       beforeSure: async done => {
-        const res = await deleteFile({
-          id: row.id
-        });
+        const res = await deleteFile(row.id);
         if (res.code == "H200") {
           toast(`已删除"${row.name}`, {
             type: "success"
@@ -162,7 +160,6 @@ export function useFileList() {
     loading.value = true;
     queryForm.current = pagination.currentPage;
     queryForm.size = pagination.pageSize;
-    console.log("queryForm", queryForm);
     if (
       queryForm.uploadTimeArr !== null &&
       queryForm.uploadTimeArr.length == 2
