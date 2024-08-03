@@ -87,6 +87,10 @@ export function useNav() {
     onReset();
     removeBackstageConfig();
   }
+  // 个人中心
+  function toAccountSettings() {
+    router.push({ name: "AccountSettings" });
+  }
 
   function backTopMenu() {
     router.push(getTopMenu()?.path);
@@ -156,6 +160,7 @@ export function useNav() {
     username,
     userAvatar,
     avatarsStyle,
-    tooltipEffect
+    tooltipEffect,
+    toAccountSettings
   };
 }

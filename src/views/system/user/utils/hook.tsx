@@ -300,10 +300,12 @@ export function useUserList() {
           gender: row?.gender ?? 0,
           email: row?.email ?? "",
           phone: row?.phone ?? "",
-          intro: row?.intro ?? ""
+          intro: row?.intro ?? "",
+          birthday: row?.birthday ?? null
         }
       },
       width: "40%",
+      top: "5vh",
       draggable: true,
       fullscreen: deviceDetection(),
       fullscreenIcon: true,
@@ -358,6 +360,7 @@ export function useUserList() {
           imgSrc: row.avatar,
           onCropper: info => {
             fileInfo.value = info;
+            console.log("info", info);
           }
         }),
       beforeSure: done => {

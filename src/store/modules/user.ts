@@ -40,18 +40,39 @@ export const useUserStore = defineStore({
     // 登录页的免登录存储几天，默认7天
     loginDay: 7
   }),
+  getters: {
+    userInfo(state) {
+      return {
+        avatar: state.avatar,
+        username: state.username,
+        nickname: state.nickname,
+        roles: state.roles,
+        id: state.id,
+        email: state.email,
+        phone: state.phone,
+        gender: state.gender,
+        birthday: state.birthday,
+        intro: state.intro,
+        isRemembered: state.isRemembered,
+        loginDay: state.loginDay
+      };
+    }
+  },
   actions: {
     /** 存储头像 */
     SET_AVATAR(avatar: string) {
       this.avatar = avatar;
+      storageLocal().setItem(userKey, this.userInfo);
     },
     /** 存储用户名 */
     SET_USERNAME(username: string) {
       this.username = username;
+      storageLocal().setItem(userKey, this.userInfo);
     },
     /** 存储昵称 */
     SET_NICKNAME(nickname: string) {
       this.nickname = nickname;
+      storageLocal().setItem(userKey, this.userInfo);
     },
     /** 存储角色 */
     SET_ROLES(roles: Array<string>) {
@@ -64,22 +85,27 @@ export const useUserStore = defineStore({
     /** 存储邮箱 */
     SET_EMAIL(email: string) {
       this.email = email;
+      storageLocal().setItem(userKey, this.userInfo);
     },
     /** 存储手机号 */
     SET_PHONE(phone: string) {
       this.phone = phone;
+      storageLocal().setItem(userKey, this.userInfo);
     },
     /** 存储性别 */
     SET_GENDER(gender: number) {
       this.gender = gender;
+      storageLocal().setItem(userKey, this.userInfo);
     },
     /** 存储生日 */
     SET_BIRTHDAY(birthday: Date) {
       this.birthday = birthday;
+      storageLocal().setItem(userKey, this.userInfo);
     },
     /** 存储简介 */
     SET_INTRO(intro: string) {
       this.intro = intro;
+      storageLocal().setItem(userKey, this.userInfo);
     },
     /** 存储是否勾选了登录页的免登录 */
     SET_ISREMEMBERED(bool: boolean) {
@@ -93,6 +119,7 @@ export const useUserStore = defineStore({
     isSelf(id: number) {
       return this.id == id;
     },
+
     /** 登入 */
     async loginByUsername(data) {
       return new Promise<any>((resolve, reject) => {

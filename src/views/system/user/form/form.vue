@@ -101,6 +101,13 @@ defineExpose({ getRef });
           </el-radio>
         </el-radio-group>
       </el-form-item>
+      <el-form-item label="生 日：" prop="birthday">
+        <el-date-picker
+          v-model="newFormInline.birthday"
+          type="date"
+          placeholder="请选择用户生日"
+        />
+      </el-form-item>
       <el-form-item label="邮箱：" prop="email">
         <el-input
           v-model="newFormInline.email"
@@ -115,6 +122,7 @@ defineExpose({ getRef });
           placeholder="请输入用户手机号"
         />
       </el-form-item>
+
       <el-form-item label="简介：">
         <el-input
           v-model="newFormInline.intro"
