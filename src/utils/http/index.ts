@@ -135,7 +135,7 @@ class PureHttp {
       (error: PureHttpError) => {
         const $error = error;
         let { message } = error;
-        if (message == "Network Error") {
+        if (message == "Request failed with status code 500") {
           message = "后端接口连接异常";
         } else if (message.includes("timeout")) {
           message = "系统接口请求超时";

@@ -332,7 +332,7 @@ onUnmounted(() => removeMatchMedia);
         "
       />
 
-      <p :class="['mt-5', pClass]">主题色</p>
+      <el-divider>主题色</el-divider>
       <ul class="theme-color">
         <li
           v-for="(item, index) in themeColors"
@@ -394,7 +394,7 @@ onUnmounted(() => removeMatchMedia);
       </ul>
 
       <span v-if="useAppStoreHook().getViewportWidth > 1280">
-        <p :class="['mt-5', pClass]">页宽</p>
+        <el-divider>页宽</el-divider>
         <Segmented
           resize
           class="mb-2 select-none"

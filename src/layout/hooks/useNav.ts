@@ -14,6 +14,7 @@ import { useGlobal, isAllEmpty } from "@pureadmin/utils";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import ExitFullscreen from "@iconify-icons/ri/fullscreen-exit-fill";
 import Fullscreen from "@iconify-icons/ri/fullscreen-fill";
+import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
 import { removeBackstageConfig } from "@/config";
 const errorInfo =
   "The current routing configuration is incorrect, please check the configuration";
@@ -22,6 +23,7 @@ export function useNav() {
   const route = useRoute();
   const pureApp = useAppStoreHook();
   const routers = useRouter().options.routes;
+  const { onReset } = useDataThemeChange();
   const { isFullscreen, toggle } = useFullscreen();
   const { wholeMenus } = storeToRefs(usePermissionStoreHook());
   /** 平台`layout`中所有`el-tooltip`的`effect`配置，默认`light` */
@@ -82,6 +84,7 @@ export function useNav() {
   /** 退出登录 */
   function logout() {
     useUserStoreHook().logOut();
+    onReset();
     removeBackstageConfig();
   }
 
