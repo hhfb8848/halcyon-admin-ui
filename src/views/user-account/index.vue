@@ -4,7 +4,7 @@ import { ref, onBeforeMount } from "vue";
 import { ReText } from "@/components/ReText";
 import Profile from "./components/Profile.vue";
 import Preferences from "./components/Preferences.vue";
-import SecurityLog from "./components/SecurityLog.vue";
+import LoginLog from "./components/LoginLog.vue";
 import { useGlobal, deviceDetection } from "@pureadmin/utils";
 import AccountManagement from "./components/AccountManagement.vue";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
@@ -45,17 +45,17 @@ const panes = [
     icon: ProfileIcon,
     component: Profile
   },
-  {
-    key: "preferences",
-    label: "偏好设置",
-    icon: PreferencesIcon,
-    component: Preferences
-  },
+  // {
+  //   key: "preferences",
+  //   label: "偏好设置",
+  //   icon: PreferencesIcon,
+  //   component: Preferences
+  // },
   {
     key: "securityLog",
     label: "登录日志",
     icon: SecurityLogIcon,
-    component: SecurityLog
+    component: LoginLog
   },
   {
     key: "accountManagement",

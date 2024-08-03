@@ -8,7 +8,7 @@ const REGEXP_USERNAME = /^[a-zA-Z0-9_]{4,16}$/;
 export const REGEXP_PWD = /^[^\u4e00-\u9fa5]{6,20}$/;
 
 /** 邮箱正则 */
-const REGEXP_EMAIL =
+export const REGEXP_EMAIL =
   /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
 
 /** 手机号正则 */

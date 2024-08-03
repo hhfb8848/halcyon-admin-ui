@@ -13,3 +13,23 @@ export const updateInfo = (data?: object) => {
     data
   });
 };
+// 发送更改密码验证码
+export const sendPwdCode = () => {
+  return http.request<any>("get", baseUrlApi(`${path}/sendPwdCode`));
+};
+// 发送更改邮箱验证码
+export const sendEmailCode = (email?: string) => {
+  return http.request<any>("get", baseUrlApi(`${path}/sendEmailCode/${email}`));
+};
+// 修改密码
+export const updatePassword = (data?: object) => {
+  return http.request<any>("put", baseUrlApi(`${path}/updatePassword`), {
+    data
+  });
+};
+// 修改邮箱
+export const updateEmail = (data?: object) => {
+  return http.request<any>("put", baseUrlApi(`${path}/updateEmail`), {
+    data
+  });
+};
