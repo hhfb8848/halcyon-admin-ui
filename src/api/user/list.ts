@@ -13,7 +13,10 @@ export const addUser = (data?: object) => {
 export const updateUser = (data?: object) => {
   return http.request<any>("put", baseUrlApi(`${path}/update`), { data });
 };
-
+/** 修改用户状态 */
+export const updateUserStutus = (data?: object) => {
+  return http.request<any>("put", baseUrlApi(`${path}/updateStatus`), { data });
+};
 /** 删除用户 */
 export const deleteUser = (data: object) => {
   return http.request<any>("delete", baseUrlApi(`${path}/delete`), { data });

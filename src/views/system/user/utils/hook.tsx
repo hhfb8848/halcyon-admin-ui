@@ -17,7 +17,8 @@ import {
   getUserList,
   deleteUser,
   resetPassword,
-  getUserDetail
+  getUserDetail,
+  updateUserStutus
 } from "@/api/user/list";
 import { ElForm, ElInput, ElFormItem, ElProgress } from "element-plus";
 import ReCropperPreview from "@/components/ReCropperPreview/index";
@@ -199,7 +200,10 @@ export function useUserList() {
             loading: true
           }
         );
-        const res = await updateUser(row);
+        const res = await updateUserStutus({
+          id: row.id,
+          status: row.status
+        });
         switchLoadMap.value[index] = Object.assign(
           {},
           switchLoadMap.value[index],
