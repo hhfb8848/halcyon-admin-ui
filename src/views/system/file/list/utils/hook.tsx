@@ -50,6 +50,11 @@ export function useFileList() {
               fit="cover"
             />
           )}
+          {row.type.includes("video") && (
+            <video width="100" height="100" controls>
+              <source src={row.url} type="video/mp4" />
+            </video>
+          )}
           {row.type.includes("pdf") && (
             <el-link
               type="primary"
@@ -60,17 +65,19 @@ export function useFileList() {
               预览
             </el-link>
           )}
-          {!row.type.includes("image") && !row.type.includes("pdf") && (
-            <el-link
-              type="primary"
-              download
-              href={row.url}
-              underline={false}
-              target="_blank"
-            >
-              下载
-            </el-link>
-          )}
+          {!row.type.includes("image") &&
+            !row.type.includes("pdf") &&
+            !row.type.includes("video") && (
+              <el-link
+                type="primary"
+                download
+                href={row.url}
+                underline={false}
+                target="_blank"
+              >
+                下载
+              </el-link>
+            )}
         </>
       )
     },
