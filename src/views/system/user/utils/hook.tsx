@@ -16,7 +16,8 @@ import {
   updateUser,
   getUserList,
   deleteUser,
-  resetPassword
+  resetPassword,
+  getUserDetail
 } from "@/api/user/list";
 import { ElForm, ElInput, ElFormItem, ElProgress } from "element-plus";
 import ReCropperPreview from "@/components/ReCropperPreview/index";
@@ -288,6 +289,7 @@ export function useUserList() {
   };
 
   function openDialog(title = "新增", row?: FormItemProps) {
+    const rowDetail = ref({} as FormItemProps);
     addDialog({
       title: `${title}用户`,
       props: {
@@ -311,6 +313,19 @@ export function useUserList() {
       fullscreenIcon: true,
       closeOnClickModal: false,
       contentRenderer: () => h(editForm, { ref: formRef }),
+      open: async ({ options }) => {
+        if (title !== "新增") {
+          const res = await getUserDetail(row.id);
+          if (res.code == "H200") {
+            rowDetail.value = res.data;
+          } else {
+            toast(res.message, { type: "error" });
+          }
+          // 手动更新
+          options.props.formInline.email = rowDetail.value.email;
+          options.props.formInline.phone = rowDetail.value.phone;
+        }
+      },
       beforeSure: (done, { options }) => {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline as FormItemProps;

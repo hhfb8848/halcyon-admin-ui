@@ -24,3 +24,7 @@ export const resetPassword = (data?: object) => {
     data
   });
 };
+// 获取用户详情
+export const getUserDetail = (id: number) => {
+  return http.request<any>("get", baseUrlApi(`${path}/getDetail/${id}`));
+};
