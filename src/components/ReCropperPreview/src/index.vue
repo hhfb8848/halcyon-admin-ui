@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import ReCropper from "@/components/ReCropper";
 import { formatBytes } from "@pureadmin/utils";
 
@@ -7,7 +7,7 @@ defineOptions({
   name: "ReCropperPreview"
 });
 
-defineProps({
+const props = defineProps({
   imgSrc: String
 });
 
@@ -18,6 +18,9 @@ const popoverRef = ref();
 const refCropper = ref();
 const showPopover = ref(false);
 const cropperImg = ref<string>("");
+const defaultCropperImg = computed(() => {
+  return props.imgSrc == "" ? "defaultStr" : props.imgSrc;
+});
 function onCropper({ base64, blob, info }) {
   infos.value = info;
   cropperImg.value = base64;
@@ -46,7 +49,7 @@ defineExpose({ hidePopover });
           <ReCropper
             ref="refCropper"
             style="border: 1px solid var(--el-border-color-light)"
-            :src="imgSrc"
+            :src="defaultCropperImg"
             circled
             @cropper="onCropper"
             @readied="onReadied"
