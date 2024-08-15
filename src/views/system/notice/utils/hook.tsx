@@ -183,7 +183,7 @@ export function useSystemNotice() {
           title: row?.title ?? "",
           content: row?.content ?? "",
           status: row?.status ?? 0,
-          type: row?.type ?? 0,
+          type: row?.type ?? 1,
           allRoles: allRoles.value,
           editorHeight: "300px"
         }

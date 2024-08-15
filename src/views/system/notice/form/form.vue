@@ -189,7 +189,7 @@ defineExpose({ getRef });
         </el-col>
         <el-col :span="9">
           <el-form-item
-            v-if="newFormInline.type === 0"
+            v-if="newFormInline.type === 1"
             label="通知角色："
             prop="roleIds"
           >

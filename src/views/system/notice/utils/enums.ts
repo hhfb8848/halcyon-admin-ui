@@ -13,13 +13,13 @@ const statusOptions: Array<any> = [
 const typeOptions: Array<any> = [
   {
     label: "通知",
-    value: 0,
+    value: 1,
     disabled: false,
     icon: "fe:notice-on"
   },
   {
     label: "公告",
-    value: 1,
+    value: 2,
     disabled: false,
     icon: "icon-park-solid:announcement"
   }
