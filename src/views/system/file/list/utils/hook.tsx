@@ -5,7 +5,7 @@ import { addDialog, closeDialog } from "@/components/ReDialog";
 import { showDialog } from "@/components/HalcyonDialog";
 
 import type { PaginationProps } from "@pureadmin/table";
-import { deviceDetection } from "@pureadmin/utils";
+import { deviceDetection, formatBytes } from "@pureadmin/utils";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 import { deleteFile, listFile } from "@/api/file/file";
 import type { FormItemProps } from "./types";
@@ -105,6 +105,15 @@ export function useFileList() {
       showOverflowTooltip: true
     },
 
+    {
+      label: "文件大小",
+      prop: "size",
+      width: 100,
+      showOverflowTooltip: true,
+      cellRenderer: ({ row }) => (
+        <el-text type="success">{formatBytes(row.size)}</el-text>
+      )
+    },
     {
       label: "创建时间",
       prop: "createTime",
