@@ -10,6 +10,7 @@ import { message as toast } from "@/utils/message";
 import { useUpload } from "@/utils/upload/upload";
 const props = withDefaults(defineProps<FormProps>(), {
   formInline: () => ({
+    id: null,
     title: "",
     content: "",
     status: null,
@@ -159,7 +160,10 @@ defineExpose({ getRef });
       <el-row>
         <el-col :span="7">
           <el-form-item label="类型：" prop="type">
-            <el-radio-group v-model="newFormInline.type">
+            <el-radio-group
+              v-model="newFormInline.type"
+              :disabled="newFormInline.id !== null"
+            >
               <el-radio-button
                 v-for="item in typeOptions"
                 :key="item.value"
@@ -203,6 +207,7 @@ defineExpose({ getRef });
               :max-collapse-tags="1"
               filterable
               :filter-method="searchRole"
+              :disabled="newFormInline.id !== null"
             >
               <el-option
                 v-for="(item, index) in newFormInline.allRoles"
