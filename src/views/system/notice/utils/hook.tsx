@@ -59,54 +59,75 @@ export function useSystemNotice() {
       label: "类型",
       prop: "type",
       width: 100,
-      fixed: "left"
-    },
-    {
-      label: "内容",
-      prop: "content",
-      width: 170
-    },
-    {
-      label: "手机号",
-      prop: "phone",
-      width: 160
-    },
-
-    {
-      label: "性别",
-      prop: "gender",
-      width: 80,
+      fixed: "left",
       cellRenderer: ({ row, props }) => (
         <el-tag
           size={props.size}
-          type={
-            row.gender === 0 ? "info" : row.gender === 1 ? "primary" : "danger"
-          }
+          type={row.type === 1 ? "primary" : "danger"}
           effect="plain"
         >
-          {row.gender === 0 ? "未知" : row.gender === 1 ? "男" : "女"}
+          {row.type == 1 ? "通知" : "公告"}
         </el-tag>
       )
     },
     {
+      label: "内容",
+      prop: "content",
+      width: 170,
+      showOverflowTooltip: true
+    },
+    {
+      label: "状态",
+      prop: "status",
+      width: 80,
+      cellRenderer: ({ row, props }) => (
+        <el-tag
+          size={props.size}
+          type={row.status === 0 ? "success" : "danger"}
+          effect="plain"
+        >
+          {row.status == 0 ? "正常" : "关闭"}
+        </el-tag>
+      )
+    },
+    {
+      label: "通知角色",
+      prop: "roleNameArr",
+      width: 160
+    },
+    {
+      label: "创建人",
+      prop: "creator",
+      width: 100
+    },
+    {
       label: "创建时间",
       prop: "createTime",
-      minWidth: 110,
-      width: 120,
       showOverflowTooltip: true,
       formatter: ({ createTime }) =>
         dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
-      label: "简介",
-      prop: "remark",
-      minWidth: 160
+      label: "修改时间",
+      prop: "updateTime",
+      showOverflowTooltip: true,
+      cellRenderer: ({ row }) => (
+        <span>
+          {row.updateTime
+            ? dayjs(row.updateTime).format("YYYY-MM-DD HH:mm:ss")
+            : ""}
+        </span>
+      )
     },
-
+    {
+      label: "修改人",
+      prop: "modifier",
+      width: 100
+    },
     {
       label: "操作",
       fixed: "right",
-      width: 220,
+      width: 160,
       slot: "operation"
     }
   ];
@@ -116,7 +137,7 @@ export function useSystemNotice() {
         <p style="text-align: center;margin-bottom:20px">
           确认要删除
           <strong style="color:var(--el-color-danger);margin:0 5px">
-            {row.username}
+            {row.title}
           </strong>
           吗?
         </p>
@@ -124,7 +145,7 @@ export function useSystemNotice() {
       beforeSure: async done => {
         const res = await deleteNotice([row.id]);
         if (res.code == "H200") {
-          toast(`已删除"${row.userName}`, {
+          toast(`已删除"${row.title}`, {
             type: "success"
           });
         } else {
@@ -188,7 +209,7 @@ export function useSystemNotice() {
           editorHeight: "300px"
         }
       },
-      width: "60%",
+      width: "65%",
       top: "3vh",
       draggable: true,
       fullscreen: deviceDetection(),
@@ -209,6 +230,9 @@ export function useSystemNotice() {
           }
           // 手动更新
           options.props.formInline.content = rowDetail.value.content;
+          options.props.formInline.status = rowDetail.value.status;
+          options.props.formInline.type = rowDetail.value.type;
+          options.props.formInline.roleIds = rowDetail.value.roleIds;
         }
       },
       beforeSure: (done, { options }) => {

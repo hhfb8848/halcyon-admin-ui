@@ -14,5 +14,4 @@ interface FormItemProps {
 interface FormProps {
   formInline: FormItemProps;
 }
-// 分配角色
 export type { FormItemProps, FormProps };
