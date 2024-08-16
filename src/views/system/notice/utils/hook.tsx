@@ -16,6 +16,7 @@ import {
   updateNotice
 } from "@/api/notice/notice";
 import { listAllSimpleRole } from "@/api/role/role";
+import { openDetail } from "@/components/NoticeDetail/index";
 export function useSystemNotice() {
   const pagination = reactive<PaginationProps>({
     total: 0,
@@ -53,7 +54,20 @@ export function useSystemNotice() {
       label: "标题",
       prop: "title",
       width: 150,
-      fixed: "left"
+      fixed: "left",
+      showOverflowTooltip: true,
+      cellRenderer: ({ row, props }) => (
+        <el-Text
+          type="primary"
+          size={props.size}
+          style="cursor: pointer"
+          onClick={() => {
+            openDetail(row, {});
+          }}
+        >
+          {row.title}
+        </el-Text>
+      )
     },
     {
       label: "类型",
