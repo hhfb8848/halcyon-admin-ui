@@ -207,13 +207,13 @@ defineExpose({ getRef });
               :max-collapse-tags="1"
               filterable
               :filter-method="searchRole"
-              :disabled="newFormInline.id !== null"
             >
               <el-option
                 v-for="(item, index) in newFormInline.allRoles"
                 :key="index"
                 :value="item.id"
                 :label="item.roleName"
+                :disabled="newFormInline.id !== null"
               >
                 {{ item.roleName }}
               </el-option>

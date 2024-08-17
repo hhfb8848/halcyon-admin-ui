@@ -21,3 +21,7 @@ export const deleteNotice = (data: object) => {
 export const getNoticeDetail = (id: number) => {
   return http.request<any>("get", baseUrlApi(`${path}/getDetail/${id}`));
 };
+/** 获取用户的通知列表 */
+export const getNoticeListByUser = (params?: object) => {
+  return http.request<any>("get", baseUrlApi(`${path}/listByUser`), { params });
+};

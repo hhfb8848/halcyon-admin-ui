@@ -11,17 +11,20 @@ export interface TabItem {
   key: string;
   name: string;
   list: ListItem[];
+  total: number;
 }
 
 export const noticesType: TabItem[] = [
   {
     key: "1",
     name: "通知",
-    list: []
+    list: [],
+    total: 0
   },
   {
     key: "2",
     name: "公告",
-    list: []
+    list: [],
+    total: 0
   }
 ];

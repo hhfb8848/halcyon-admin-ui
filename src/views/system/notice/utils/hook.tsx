@@ -107,7 +107,8 @@ export function useSystemNotice() {
     {
       label: "通知角色",
       prop: "roleNameArr",
-      width: 160
+      width: 160,
+      showOverflowTooltip: true
     },
     {
       label: "创建人",

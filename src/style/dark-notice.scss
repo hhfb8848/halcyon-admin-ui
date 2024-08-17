@@ -5,11 +5,12 @@
   Maintainer: @highlightjs/core-team
   Version: 2021.09.0
 */
-.dark {
+html.dark {
   pre code.hljs {
     display: block;
     overflow-x: auto;
     padding: 1em;
+    background-color: #292D3E !important;
   }
   code.hljs {
     padding: 3px 5px;

@@ -1,14 +1,39 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { noticesType } from "./type";
 import NoticeList from "./noticeList.vue";
 import Bell from "@iconify-icons/ep/bell";
-
+import { getNoticeListByUser } from "@/api/notice/notice";
 const noticesNum = ref(0);
 const notices = ref(noticesType);
 const activeKey = ref(noticesType[0].key);
-
-notices.value.map(v => (noticesNum.value += v.list.length));
+const pagination = reactive({
+  total: 0,
+  size: 10,
+  current: 1,
+  type: null // 1 通知 2 公告
+});
+async function getNotices() {
+  pagination.type = Number(activeKey.value);
+  const res = await getNoticeListByUser(pagination);
+  noticesNum.value = res.data.countVO.noReadCount;
+  // countVO.totalCount为通知与公告的总数，total为通知或公告的总数
+  switch (activeKey.value) {
+    // 通知
+    case "1":
+      notices.value[0].list = res.data.records;
+      notices.value[0].total = res.data.total;
+      notices.value[1].total = res.data.countVO.totalCount - res.data.total;
+      break;
+    // 公告
+    case "2":
+      notices.value[1].list = res.data.records;
+      notices.value[1].total = res.data.total;
+      notices.value[0].total = res.data.countVO.totalCount - res.data.total;
+      break;
+  }
+}
+getNotices();
 </script>
 
 <template>
@@ -27,6 +52,7 @@ notices.value.map(v => (noticesNum.value += v.list.length));
           :stretch="true"
           class="dropdown-tabs"
           :style="{ width: notices.length === 0 ? '200px' : '330px' }"
+          @tab-change="getNotices"
         >
           <el-empty
             v-if="notices.length === 0"
@@ -36,7 +62,7 @@ notices.value.map(v => (noticesNum.value += v.list.length));
           <span v-else>
             <template v-for="item in notices" :key="item.key">
               <el-tab-pane
-                :label="`${item.name}(${item.list.length})`"
+                :label="`${item.name}(${item.total})`"
                 :name="`${item.key}`"
               >
                 <el-scrollbar max-height="330px">
