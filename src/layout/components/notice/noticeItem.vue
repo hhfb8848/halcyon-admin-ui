@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { ListItem } from "./type";
-import { ref, PropType, nextTick } from "vue";
+import { ref, PropType, nextTick, inject } from "vue";
 import { useNav } from "@/layout/hooks/useNav";
 import { deviceDetection } from "@pureadmin/utils";
-
+import dayjs from "dayjs";
+import "dayjs/locale/zh-cn";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { openDetail } from "@/components/NoticeDetail";
+dayjs.extend(relativeTime); // 相对时间
+dayjs.locale("zh-cn"); // 使用本地化语言
 const props = defineProps({
   noticeItem: {
     type: Object as PropType<ListItem>,
@@ -13,11 +18,9 @@ const props = defineProps({
 
 const titleRef = ref(null);
 const titleTooltip = ref(false);
-const descriptionRef = ref(null);
-const descriptionTooltip = ref(false);
 const { tooltipEffect } = useNav();
 const isMobile = deviceDetection();
-
+const getNotice = inject("refresh") as Function;
 function hoverTitle() {
   nextTick(() => {
     titleRef.value?.scrollWidth > titleRef.value?.clientWidth
@@ -25,25 +28,10 @@ function hoverTitle() {
       : (titleTooltip.value = false);
   });
 }
-
-function hoverDescription(event, description) {
-  // currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除
-  const tempTag = document.createElement("span");
-  tempTag.innerText = description;
-  tempTag.className = "getDescriptionWidth";
-  document.querySelector("body").appendChild(tempTag);
-  const currentWidth = (
-    document.querySelector(".getDescriptionWidth") as HTMLSpanElement
-  ).offsetWidth;
-  document.querySelector(".getDescriptionWidth").remove();
-
-  // cellWidth为容器的宽度
-  const cellWidth = event.target.offsetWidth;
-
-  // 当文本宽度大于容器宽度两倍时，代表文本显示超过两行
-  currentWidth > 2 * cellWidth
-    ? (descriptionTooltip.value = true)
-    : (descriptionTooltip.value = false);
+function openNotice() {
+  openDetail(props.noticeItem, {}, true, (event, notice) => {
+    getNotice();
+  });
 }
 </script>
 
@@ -51,12 +39,6 @@ function hoverDescription(event, description) {
   <div
     class="notice-container border-b-[1px] border-solid border-[#f0f0f0] dark:border-[#303030]"
   >
-    <el-avatar
-      v-if="props.noticeItem.avatar"
-      :size="30"
-      :src="props.noticeItem.avatar"
-      class="notice-container-avatar"
-    />
     <div class="notice-container-text">
       <div class="notice-text-title text-[#000000d9] dark:text-white">
         <el-tooltip
@@ -71,37 +53,32 @@ function hoverDescription(event, description) {
             ref="titleRef"
             class="notice-title-content"
             @mouseover="hoverTitle"
+            @click="openNotice"
           >
             {{ props.noticeItem.title }}
           </div>
         </el-tooltip>
         <el-tag
-          v-if="props.noticeItem?.extra"
-          :type="props.noticeItem?.status"
+          v-if="props.noticeItem?.readStatus === 0"
           size="small"
           class="notice-title-extra"
+          type="danger"
         >
-          {{ props.noticeItem?.extra }}
+          未读
+        </el-tag>
+        <el-tag v-else size="small" class="notice-title-extra" type="success">
+          已读
         </el-tag>
       </div>
 
-      <el-tooltip
-        popper-class="notice-title-popper"
-        :effect="tooltipEffect"
-        :disabled="!descriptionTooltip"
-        :content="props.noticeItem.description"
-        placement="top-start"
-      >
-        <div
-          ref="descriptionRef"
-          class="notice-text-description"
-          @mouseover="hoverDescription($event, props.noticeItem.description)"
-        >
-          {{ props.noticeItem.description }}
-        </div>
-      </el-tooltip>
-      <div class="notice-text-datetime text-[#00000073] dark:text-white">
-        {{ props.noticeItem.datetime }}
+      <div class="notice-text-description">
+        {{ props.noticeItem.content }}
+      </div>
+      <div class="notice-text-footer text-[#00000073] dark:text-white">
+        <span>
+          {{ dayjs().to(dayjs(props.noticeItem.createTime)) }}
+        </span>
+        <span>{{ props.noticeItem.creator }}</span>
       </div>
     </div>
   </div>
@@ -156,7 +133,7 @@ function hoverDescription(event, description) {
     }
 
     .notice-text-description,
-    .notice-text-datetime {
+    .notice-text-footer {
       font-size: 12px;
       line-height: 1.5715;
     }
@@ -169,8 +146,10 @@ function hoverDescription(event, description) {
       -webkit-box-orient: vertical;
     }
 
-    .notice-text-datetime {
+    .notice-text-footer {
       margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
     }
   }
 }

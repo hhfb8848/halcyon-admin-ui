@@ -1,41 +1,49 @@
-import type { DialogOptions } from "@/components/ReDialog/type";
-import { addDialog } from "@/components/ReDialog";
-import { h, ref } from "vue";
+import { computed, h, ref } from "vue";
 import dayjs from "dayjs";
 import { message as toast } from "@/utils/message";
-import { getNoticeDetail } from "@/api/notice/notice";
+import { getNoticeDetail, setRead } from "@/api/notice/notice";
 import NoticeContent from "./Content.vue"; // Adjust the import path as necessary
 import { deviceDetection } from "@pureadmin/utils";
 import { ElButton } from "element-plus";
-
-export function openDetail(notice: any, options: DialogOptions) {
-  const metadataItems = [
-    h(
-      "span",
-      { style: { color: "var(--el-color-primary)" } },
-      `发布人: ${notice.creator}`
-    ),
-    h(
-      "span",
-      { style: { color: "var(--el-color-primary)" } },
-      `发布于: ${dayjs(notice.createTime).format("YYYY-MM-DD HH:mm:ss")}`
-    ),
-    notice.modifier &&
-      h(
-        "span",
-        { style: { color: "var(--el-color-primary)" } },
-        `修改人: ${notice.modifier}`
-      ),
-    notice.updateTime &&
-      h(
-        "span",
-        { style: { color: "var(--el-color-primary)" } },
-        `修改于: ${dayjs(notice.updateTime).format("YYYY-MM-DD HH:mm:ss")}`
-      )
-  ].filter(Boolean);
-  console.log("notice", notice);
+import type { DialogOptions } from "@/components/ReDialog/type";
+import { addDialog } from "@/components/ReDialog";
+import { debounce } from "@pureadmin/utils";
+export function openDetail(
+  notice: any,
+  options: DialogOptions,
+  isUserOpen = false,
+  emit?: (event: string, ...args: any[]) => void
+) {
   const detail = ref(notice || {});
   const contentHeight = ref("67vh");
+  console.log("notice", notice);
+  const metadataItems = computed(() =>
+    [
+      h(
+        "span",
+        { style: { color: "var(--el-color-primary)" } },
+        `发布人: ${detail.value.creator}`
+      ),
+      h(
+        "span",
+        { style: { color: "var(--el-color-primary)" } },
+        `发布于: ${dayjs(detail.value.createTime).format("YYYY-MM-DD HH:mm:ss")}`
+      ),
+      detail.value.modifier &&
+        h(
+          "span",
+          { style: { color: "var(--el-color-primary)" } },
+          `修改人: ${detail.value.modifier}`
+        ),
+      detail.value.updateTime &&
+        h(
+          "span",
+          { style: { color: "var(--el-color-primary)" } },
+          `修改于: ${dayjs(detail.value.updateTime).format("YYYY-MM-DD HH:mm:ss")}`
+        )
+    ].filter(Boolean)
+  );
+
   addDialog({
     width: "65%",
     center: true,
@@ -48,6 +56,7 @@ export function openDetail(notice: any, options: DialogOptions) {
       const res = await getNoticeDetail(notice.id);
       if (res.code == "H200") {
         detail.value = res.data;
+        console.log("detail.value", detail.value);
       } else {
         toast(res.message, { type: "error" });
       }
@@ -57,7 +66,6 @@ export function openDetail(notice: any, options: DialogOptions) {
         "div",
         {
           style: {
-            // maxHeight: "75vh", // Limit the height of the content area
             overflowY: "auto" // Add vertical scrollbar if content exceeds max height
           }
         },
@@ -72,12 +80,14 @@ export function openDetail(notice: any, options: DialogOptions) {
                 padding: "10px",
                 display: "flex",
                 justifyContent:
-                  metadataItems.length > 2 ? "space-between" : "space-around",
+                  metadataItems.value.length > 2
+                    ? "space-between"
+                    : "space-around",
                 gap: "10px",
                 flexWrap: "wrap"
               }
             },
-            metadataItems
+            metadataItems.value
           ),
           h(NoticeContent, {
             content: detail.value.content,
@@ -87,35 +97,54 @@ export function openDetail(notice: any, options: DialogOptions) {
       );
     },
     fullscreenCallBack({ options }) {
-      console.log("options", options);
       contentHeight.value = options.fullscreen ? "76vh" : "67vh";
     },
     footerRenderer({ options, index }) {
-      return h(
-        "div",
-        {
-          style: {
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "10px"
+      const handleReadClick = debounce(
+        async () => {
+          if (notice.readStatus == 1) {
+            toast("通知已读", { type: "warning" });
+            return;
+          }
+          const res = await setRead(detail.value.id);
+          if (res.code == "H200") {
+            toast("设为已读成功", { type: "success" });
+            notice.readStatus = 1;
+            if (emit) emit("read-success", detail.value);
+          } else {
+            toast(res.message, { type: "error" });
           }
         },
-        [
-          h(
-            ElButton,
+        4000,
+        true
+      );
+      return isUserOpen
+        ? h(
+            "div",
             {
-              type: "success",
-              plain: true,
-              text: true,
-              bg: true,
-              onClick: () => {
-                toast("设为已读成功", { type: "success" });
+              style: {
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "10px"
               }
             },
-            { default: () => "设为已读" }
+            [
+              h(
+                ElButton,
+                {
+                  type: "success",
+                  plain: true,
+                  text: true,
+                  bg: true,
+                  onClick: handleReadClick
+                },
+                {
+                  default: () => (notice.readStatus == 0 ? "设为已读" : "已读")
+                }
+              )
+            ]
           )
-        ]
-      );
+        : null;
     },
     ...options // 其他配置选项
   });

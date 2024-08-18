@@ -25,3 +25,8 @@ export const getNoticeDetail = (id: number) => {
 export const getNoticeListByUser = (params?: object) => {
   return http.request<any>("get", baseUrlApi(`${path}/listByUser`), { params });
 };
+
+/** 修改基本通知公告 */
+export const setRead = (id: number) => {
+  return http.request<any>("post", baseUrlApi(`${path}/setRead/${id}`));
+};

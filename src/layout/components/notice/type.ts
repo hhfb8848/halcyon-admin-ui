@@ -5,6 +5,7 @@ export interface ListItem {
   id: number;
   content: string;
   creator: string;
+  readStatus: number;
 }
 
 export interface TabItem {

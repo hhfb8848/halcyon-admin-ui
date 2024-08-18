@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType } from "vue";
+import { PropType, inject } from "vue";
 import { ListItem } from "./type";
 import NoticeItem from "./noticeItem.vue";
 

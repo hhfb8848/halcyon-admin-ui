@@ -29,7 +29,7 @@ watch(
 
 <style lang="scss">
 .notice-content {
-  overflow-y: scroll;
+  overflow-y: auto;
   max-height: 76vh;
   p,
   span,

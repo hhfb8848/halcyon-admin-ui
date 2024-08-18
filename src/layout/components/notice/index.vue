@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, provide } from "vue";
 import { noticesType } from "./type";
 import NoticeList from "./noticeList.vue";
 import Bell from "@iconify-icons/ep/bell";
@@ -9,31 +9,57 @@ const notices = ref(noticesType);
 const activeKey = ref(noticesType[0].key);
 const pagination = reactive({
   total: 0,
-  size: 10,
+  size: 5,
   current: 1,
   type: null // 1 通知 2 公告
 });
-async function getNotices() {
+async function getNotices(isLoadMore = false) {
   pagination.type = Number(activeKey.value);
+  if (isLoadMore) {
+    pagination.current++;
+  } else {
+    pagination.current = 1;
+  }
   const res = await getNoticeListByUser(pagination);
   noticesNum.value = res.data.countVO.noReadCount;
+  res.data.records.forEach((item: any) => {
+    // 去掉html标签
+    item.content = item.content.replace(/<[^>]+>/g, "");
+  });
   // countVO.totalCount为通知与公告的总数，total为通知或公告的总数
   switch (activeKey.value) {
     // 通知
     case "1":
-      notices.value[0].list = res.data.records;
+      if (isLoadMore) {
+        res.data.records.forEach((item: any) => {
+          notices.value[0].list.push(item);
+        });
+      } else {
+        notices.value[0].list = res.data.records;
+      }
       notices.value[0].total = res.data.total;
       notices.value[1].total = res.data.countVO.totalCount - res.data.total;
       break;
     // 公告
     case "2":
-      notices.value[1].list = res.data.records;
+      if (isLoadMore) {
+        res.data.records.forEach((item: any) => {
+          notices.value[1].list.push(item);
+        });
+      } else {
+        notices.value[1].list = res.data.records;
+      }
       notices.value[1].total = res.data.total;
       notices.value[0].total = res.data.countVO.totalCount - res.data.total;
       break;
   }
 }
+function loadMore() {
+  getNotices(true);
+}
 getNotices();
+// 给子组件提供方法
+provide("refresh", getNotices);
 </script>
 
 <template>
@@ -52,7 +78,7 @@ getNotices();
           :stretch="true"
           class="dropdown-tabs"
           :style="{ width: notices.length === 0 ? '200px' : '330px' }"
-          @tab-change="getNotices"
+          @tab-change="getNotices(false)"
         >
           <el-empty
             v-if="notices.length === 0"
@@ -68,6 +94,14 @@ getNotices();
                 <el-scrollbar max-height="330px">
                   <div class="noticeList-container">
                     <NoticeList :list="item.list" />
+                    <el-divider v-if="item.list.length < item.total">
+                      <el-text
+                        type="success"
+                        style="cursor: pointer"
+                        @click="loadMore"
+                        >加载更多</el-text
+                      ></el-divider
+                    >
                   </div>
                 </el-scrollbar>
               </el-tab-pane>
