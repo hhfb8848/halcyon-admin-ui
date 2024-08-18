@@ -14,6 +14,7 @@ import NProgress from "../progress";
 import { getToken, formatToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
 import { message as messageEl } from "@/utils/message";
+import { inject } from "vue";
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
   // 请求超时时间
@@ -173,6 +174,9 @@ class PureHttp {
             switch (response.code) {
               case "H800":
                 useUserStoreHook().logOut();
+                messageEl(response.message, { type: "error" });
+                break;
+              case "H403":
                 messageEl(response.message, { type: "error" });
                 break;
               default:

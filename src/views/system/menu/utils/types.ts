@@ -14,7 +14,7 @@ interface FormItemProps {
   enterTransition: string;
   leaveTransition: string;
   activePath: string;
-  auths: string;
+  perms: string;
   frameSrc: string;
   frameLoading: number;
   cacheFlag: number;
@@ -26,5 +26,20 @@ interface FormItemProps {
 interface FormProps {
   formInline: FormItemProps;
 }
-
+export const getMenuType = (type: number, text = false): any => {
+  switch (type) {
+    case 0:
+      return text ? "目录" : "success";
+    case 1:
+      return text ? "菜单" : "primary";
+    case 2:
+      return text ? "iframe" : "warning";
+    case 3:
+      return text ? "外链" : "danger";
+    case 4:
+      return text ? "按钮" : "info";
+    default:
+      return "";
+  }
+};
 export type { FormItemProps, FormProps };

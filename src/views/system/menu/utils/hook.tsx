@@ -1,12 +1,13 @@
 import editForm from "../form/form.vue";
 import { handleTree } from "@/utils/tree";
-import { message } from "@/utils/message";
+import { message as toast } from "@/utils/message";
 import { addDialog } from "@/components/ReDialog";
 import { reactive, ref, onMounted, h } from "vue";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { cloneDeep, isAllEmpty, deviceDetection } from "@pureadmin/utils";
 import { addMenu, listMenu, updateMenu } from "@/api/menu/menu";
 import { menuTypeOptions } from "./enums";
+import { getMenuType } from "./types";
 export function useMenu() {
   const form = reactive({
     title: ""
@@ -16,22 +17,6 @@ export function useMenu() {
   const dataList = ref([]);
   const loading = ref(true);
 
-  const getMenuType = (type: number, text = false): any => {
-    switch (type) {
-      case 0:
-        return text ? "目录" : "success";
-      case 1:
-        return text ? "菜单" : "primary";
-      case 2:
-        return text ? "iframe" : "warning";
-      case 3:
-        return text ? "外链" : "danger";
-      case 4:
-        return text ? "按钮" : "info";
-      default:
-        return "";
-    }
-  };
   const getVisble = (type, text = false) => {
     if (type == 0) {
       return text ? "显示" : "success";
@@ -80,7 +65,7 @@ export function useMenu() {
     },
     {
       label: "权限标识",
-      prop: "auths"
+      prop: "perms"
     },
     {
       label: "排序",
@@ -117,10 +102,9 @@ export function useMenu() {
 
   async function onSearch() {
     loading.value = true;
-    const { code, data, message } = await listMenu(); // 这里是返回一维数组结构，前端自行处理成树结构，返回格式要求：唯一id加父节点parentId，parentId取父节点id
+    const { code, data } = await listMenu(); // 这里是返回一维数组结构，前端自行处理成树结构，返回格式要求：唯一id加父节点parentId，parentId取父节点id
     let newData = data;
     if (code != "H200") {
-      message(message, { type: "error" });
     } else {
       if (!isAllEmpty(form.title)) {
         // 前端搜索菜单名称
@@ -167,7 +151,7 @@ export function useMenu() {
           icon: row?.icon ?? "",
           extraIcon: row?.extraIcon ?? "",
           activePath: row?.activePath ?? "",
-          auths: row?.auths ?? "",
+          perms: row?.perms ?? "",
           frameSrc: row?.frameSrc ?? "",
           frameLoading: row?.frameLoading ?? 0,
           cacheFlag: row?.cacheFlag ?? 0,
@@ -185,7 +169,7 @@ export function useMenu() {
         const FormRef = formRef.value.getRef();
         const curData = options.props.formInline;
         function chores() {
-          message(`${title}菜单：${curData.title}成功`, {
+          toast(`${title}菜单：${curData.title}成功`, {
             type: "success"
           });
           done(); // 关闭弹框
@@ -202,7 +186,7 @@ export function useMenu() {
                 if (res.code == "H200") {
                   chores();
                 } else {
-                  message(res.message, { type: "error" });
+                  toast(res.message, { type: "error" });
                 }
               } else {
                 // 实际开发先调用新增接口，再进行下面操作
@@ -210,12 +194,12 @@ export function useMenu() {
                 if (res.code == "H200") {
                   chores();
                 } else {
-                  message(res.message, { type: "error" });
+                  toast(res.message, { type: "error" });
                 }
               }
             } catch (error) {
               console.error("Error update menu:", error);
-              message(`${title}菜单时出错`, { type: "error" });
+              toast(`${title}菜单时出错`, { type: "error" });
             }
           }
         });
@@ -224,7 +208,7 @@ export function useMenu() {
   }
 
   function handleDelete(row) {
-    message(`您删除了菜单名称为${row.title}的这条数据`, {
+    toast(`您删除了菜单名称为${row.title}的这条数据`, {
       type: "success"
     });
     onSearch();
@@ -246,7 +230,6 @@ export function useMenu() {
     openDialog,
     /** 删除菜单 */
     handleDelete,
-    handleSelectionChange,
-    getMenuType
+    handleSelectionChange
   };
 }

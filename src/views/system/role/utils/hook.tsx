@@ -178,9 +178,8 @@ export function useRole() {
     loading.value = true;
     form.current = pagination.currentPage;
     form.size = pagination.pageSize;
-    const { code, data, message } = await listRole(toRaw(form));
+    const { code, data } = await listRole(toRaw(form));
     if (code != "H200") {
-      message(message, { type: "error" });
     } else {
       dataList.value = data.records;
       pagination.total = data.total;

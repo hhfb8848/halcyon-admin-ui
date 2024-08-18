@@ -30,7 +30,7 @@ const props = withDefaults(defineProps<FormProps>(), {
     enterTransition: "",
     leaveTransition: "",
     activePath: "",
-    auths: "",
+    perms: "",
     frameSrc: "",
     frameLoading: 0,
     cacheFlag: 0,
@@ -55,20 +55,20 @@ function menuTypeChange({ index, option }) {
       newFormInline.value.enterTransition = "";
       newFormInline.value.leaveTransition = "";
       newFormInline.value.component = "";
-      newFormInline.value.auths = "";
+      newFormInline.value.perms = "";
     // 菜单
     case 1:
       newFormInline.value.redirect = "";
       newFormInline.value.frameSrc = "";
-      newFormInline.value.auths = "";
+      newFormInline.value.perms = "";
     // iframe
     case 2:
       newFormInline.value.component = "";
-      newFormInline.value.auths = "";
+      newFormInline.value.perms = "";
     // 外链
     case 3:
       newFormInline.value.component = "";
-      newFormInline.value.auths = "";
+      newFormInline.value.perms = "";
     // 按钮
     case 4:
       newFormInline.value.enterTransition = "";
@@ -197,9 +197,9 @@ defineExpose({ getRef });
 
       <re-col v-if="newFormInline.type === 4" :value="12" :xs="24" :sm="24">
         <!-- 按钮级别权限设置 -->
-        <el-form-item label="权限标识：" prop="auths">
+        <el-form-item label="权限标识：" prop="perms">
           <el-input
-            v-model="newFormInline.auths"
+            v-model="newFormInline.perms"
             clearable
             placeholder="请输入权限标识"
           />

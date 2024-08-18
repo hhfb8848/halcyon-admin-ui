@@ -13,12 +13,11 @@ import { getKeyList } from "@pureadmin/utils";
 import { listSimpleMenu } from "@/api/menu/menu";
 import { handleTree } from "@/utils/tree";
 import { isAllEmpty } from "@pureadmin/utils";
-import { useMenu } from "@/views/system/menu/utils/hook";
+import { getMenuType } from "@/views/system/menu/utils/types";
 import { listMenuIdByRoleId, assignForRole } from "@/api/permission/permission";
 defineOptions({
   name: "SystemRoleMenu"
 });
-const { getMenuType } = useMenu();
 const props = defineProps({
   // 控制值
   roleMenuDrawer: {
@@ -84,7 +83,7 @@ onMounted(() => {
 async function getSimpleMenuList() {
   const { code, data, message } = await listSimpleMenu();
   if (code != "H200") {
-    message(message, { type: "error" });
+    // message(message, { type: "error" });
   } else {
     // 全部菜单ID
     allMenuIds = getKeyList(data, "id");
