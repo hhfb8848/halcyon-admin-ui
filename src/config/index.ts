@@ -59,7 +59,11 @@ export const getPlatformConfig = async (app: App): Promise<undefined> => {
   //     throw "请在public文件夹下添加platform-config.json配置文件";
   //   });
   return initPlatformConfig()
-    .then(({ data: config }) => {
+    .then(({ code, data: config }) => {
+      if (code !== "H200") {
+        throw "从本地获取配置";
+      }
+      console.log("config", config);
       let $config = app.config.globalProperties.$config;
       // 自动注入系统配置
       if (app && $config && typeof config === "object") {
