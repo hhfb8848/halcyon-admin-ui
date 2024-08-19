@@ -14,3 +14,7 @@ export const logOut = (data?: object) => {
 export const refreshTokenApi = (data?: object) => {
   return http.request<any>("post", "/refreshToken", { data });
 };
+// 退出登录
+export const getLogout = () => {
+  return http.request<any>("post", baseUrlApi("/logout"));
+};

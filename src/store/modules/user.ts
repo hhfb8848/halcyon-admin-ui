@@ -7,9 +7,10 @@ import {
   routerArrays,
   storageLocal
 } from "../utils";
-import { getLogin, refreshTokenApi } from "@/api/auth/auth";
+import { getLogin, refreshTokenApi, getLogout } from "@/api/auth/auth";
 import { useMultiTagsStoreHook } from "./multiTags";
 import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
+import { message } from "@/utils/message";
 
 export const useUserStore = defineStore({
   id: "pure-user",
@@ -141,6 +142,15 @@ export const useUserStore = defineStore({
       useMultiTagsStoreHook().handleTags("equal", [...routerArrays]);
       resetRouter();
       router.push("/login");
+    },
+
+    /** 登出（调用接口） */
+    async logOutByApi() {
+      const { code } = await getLogout();
+      if (code == "H200") {
+        message("退出成功", { type: "success" });
+      }
+      this.logOut();
     },
     /** 刷新`token` */
     async handRefreshToken(data) {
