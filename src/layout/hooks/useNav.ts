@@ -84,9 +84,12 @@ export function useNav() {
   /** 退出登录 */
   function logout() {
     useUserStoreHook().logOutByApi();
-    // 暂时注释，后续完善
-    // onReset();
+    setTimeout(() => {
+      removeBackstageConfig();
+      onReset();
+    }, 100);
     // removeBackstageConfig();
+    // onReset();
   }
   // 个人中心
   function toAccountSettings() {

@@ -38,6 +38,14 @@ const handleClickDelete = (config: FormItemProps) => {
           >
             系统内置
           </el-tag>
+          <el-tag
+            v-else
+            color="#606266"
+            effect="dark"
+            class="mx-1 list-card-item_detail--operation--tag"
+          >
+            非内置
+          </el-tag>
           <el-dropdown trigger="click">
             <IconifyIconOffline :icon="More2Fill" class="text-[24px]" />
             <template #dropdown>

@@ -5,6 +5,7 @@ import { storageLocal } from "@pureadmin/utils";
 let config: object = {};
 const { VITE_PUBLIC_PATH } = import.meta.env;
 const backstageKey = "backstagePlatformConfig";
+const footerMessageKey = "admin.footer.message";
 const setConfig = (cfg?: unknown) => {
   config = Object.assign(config, cfg);
 };

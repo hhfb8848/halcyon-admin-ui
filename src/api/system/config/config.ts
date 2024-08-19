@@ -3,6 +3,7 @@ import { baseUrlApi } from "@/api/utils";
 
 const path = "/sysConfig";
 const platformConfigKey = "admin.platform.theme";
+const footerMessageKey = "admin.footer.message";
 /** 新增配置 */
 export const addConfig = (data?: object) => {
   return http.request<any>("post", baseUrlApi(`${path}/create`), { data });
@@ -39,5 +40,12 @@ export const getPlatformConfig = () => {
   return http.request<any>(
     "get",
     baseUrlApi(`${path}/getByKey/${platformConfigKey}`)
+  );
+};
+// 页脚信息
+export const getFooterMessage = () => {
+  return http.request<any>(
+    "get",
+    baseUrlApi(`${path}/getByKey/${footerMessageKey}`)
   );
 };

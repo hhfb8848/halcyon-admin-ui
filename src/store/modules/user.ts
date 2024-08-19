@@ -145,12 +145,12 @@ export const useUserStore = defineStore({
     },
 
     /** 登出（调用接口） */
-    async logOutByApi() {
-      const { code } = await getLogout();
-      if (code == "H200") {
-        message("退出成功", { type: "success" });
-      }
-      this.logOut();
+    logOutByApi() {
+      getLogout().then(res => {
+        if (res.code == "H200") {
+          message("退出成功", { type: "success" });
+        }
+      });
     },
     /** 刷新`token` */
     async handRefreshToken(data) {
