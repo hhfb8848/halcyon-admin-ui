@@ -13,7 +13,7 @@ import {
   deleteConfig,
   getConfig,
   refreshCache
-} from "@/api/config/config";
+} from "@/api/system/config/config";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 export function useConfig() {
   const searchValue = ref("");

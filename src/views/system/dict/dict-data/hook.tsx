@@ -13,7 +13,7 @@ import {
   updateDictData,
   listDictData,
   deleteDictData
-} from "@/api/dict/dict-data";
+} from "@/api/system/dict/dict-data";
 export function useDictData() {
   const pagination = reactive<PaginationProps>({
     total: 0,

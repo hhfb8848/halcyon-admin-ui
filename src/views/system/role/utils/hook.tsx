@@ -7,7 +7,12 @@ import type { FormItemProps } from "../utils/types";
 import type { PaginationProps } from "@pureadmin/table";
 import { deviceDetection } from "@pureadmin/utils";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
-import { addRole, updateRole, listRole, deleteRole } from "@/api/role/role";
+import {
+  addRole,
+  updateRole,
+  listRole,
+  deleteRole
+} from "@/api/system/role/role";
 export function useRole() {
   const pagination = reactive<PaginationProps>({
     total: 0,

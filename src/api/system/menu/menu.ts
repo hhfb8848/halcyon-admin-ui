@@ -1,5 +1,5 @@
 import { http } from "@/utils/http";
-import { baseUrlApi } from "../utils";
+import { baseUrlApi } from "@/api/utils";
 const path = "/sysMenu";
 /** 新增菜单 */
 export const addMenu = (data?: object) => {

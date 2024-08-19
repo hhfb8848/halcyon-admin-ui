@@ -1,4 +1,8 @@
-import { upload, createFile, getFilePreSignedUrl } from "@/api/file/file";
+import {
+  upload,
+  createFile,
+  getFilePreSignedUrl
+} from "@/api/system/file/file";
 import { baseUrlApi } from "@/api/utils";
 import CryptoJS from "crypto-js";
 import type {

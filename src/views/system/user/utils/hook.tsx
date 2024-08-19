@@ -19,7 +19,7 @@ import {
   resetPassword,
   getUserDetail,
   updateUserStutus
-} from "@/api/user/list";
+} from "@/api/system/user/list";
 import { ElForm, ElInput, ElFormItem, ElProgress } from "element-plus";
 import ReCropperPreview from "@/components/ReCropperPreview/index";
 import { useUpload } from "@/utils/upload/upload";
@@ -27,8 +27,8 @@ import { REGEXP_PWD } from "./rule";
 import {
   getRoleIdsByUserId,
   assignRoleForUser
-} from "@/api/permission/permission";
-import { listAllSimpleRole } from "@/api/role/role";
+} from "@/api/auth/permission/permission";
+import { listAllSimpleRole } from "@/api/system/role/role";
 export function useUserList() {
   const { uploadFileByBack } = useUpload();
   const pagination = reactive<PaginationProps>({

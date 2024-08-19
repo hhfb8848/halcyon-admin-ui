@@ -3,7 +3,7 @@ import { ref, reactive, provide } from "vue";
 import { noticesType } from "./type";
 import NoticeList from "./noticeList.vue";
 import Bell from "@iconify-icons/ep/bell";
-import { getNoticeListByUser } from "@/api/notice/notice";
+import { getNoticeListByUser } from "@/api/system/notice/notice";
 const noticesNum = ref(0);
 const notices = ref(noticesType);
 const activeKey = ref(noticesType[0].key);

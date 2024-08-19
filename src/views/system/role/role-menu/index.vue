@@ -10,11 +10,14 @@ import {
 import ElTreeLine from "@/components/ReTreeLine";
 import { extractPathList, deleteChildren } from "@/utils/tree";
 import { getKeyList } from "@pureadmin/utils";
-import { listSimpleMenu } from "@/api/menu/menu";
+import { listSimpleMenu } from "@/api/system/menu/menu";
 import { handleTree } from "@/utils/tree";
 import { isAllEmpty } from "@pureadmin/utils";
 import { getMenuType } from "@/views/system/menu/utils/types";
-import { listMenuIdByRoleId, assignForRole } from "@/api/permission/permission";
+import {
+  listMenuIdByRoleId,
+  assignForRole
+} from "@/api/auth/permission/permission";
 defineOptions({
   name: "SystemRoleMenu"
 });

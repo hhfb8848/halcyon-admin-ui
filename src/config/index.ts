@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { App } from "vue";
-import { getPlatformConfig as initPlatformConfig } from "@/api/config/config";
+import { getPlatformConfig as initPlatformConfig } from "@/api/system/config/config";
 import { storageLocal } from "@pureadmin/utils";
 let config: object = {};
 const { VITE_PUBLIC_PATH } = import.meta.env;

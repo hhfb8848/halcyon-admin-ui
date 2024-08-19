@@ -7,7 +7,7 @@ import { showDialog } from "@/components/HalcyonDialog";
 import type { PaginationProps } from "@pureadmin/table";
 import { deviceDetection, formatBytes } from "@pureadmin/utils";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
-import { deleteFile, listFile } from "@/api/file/file";
+import { deleteFile, listFile } from "@/api/system/file/file";
 import type { FormItemProps } from "./types";
 export function useFileList() {
   const pagination = reactive<PaginationProps>({

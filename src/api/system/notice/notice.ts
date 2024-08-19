@@ -1,5 +1,5 @@
 import { http } from "@/utils/http";
-import { baseUrlApi } from "../utils";
+import { baseUrlApi } from "@/api/utils";
 const path = "/sysNotice";
 /** 获取通知列表 */
 export const getNoticeList = (params?: object) => {

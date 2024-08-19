@@ -1,5 +1,5 @@
 import { http } from "@/utils/http";
-import { baseUrlApi } from "../utils";
+import { baseUrlApi } from "@/api/utils";
 
 const path = "/sysDictData";
 /** 新增字典数据项 */

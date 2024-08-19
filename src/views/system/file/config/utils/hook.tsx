@@ -13,7 +13,7 @@ import {
   deleteConfig,
   updateConfigMaster,
   getConfig
-} from "@/api/file/config";
+} from "@/api/system/file/config";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
 
 export function useFileConfig() {

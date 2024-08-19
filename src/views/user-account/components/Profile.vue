@@ -6,12 +6,12 @@ import ReCropperPreview from "@/components/ReCropperPreview";
 import { createFormData, deviceDetection } from "@pureadmin/utils";
 import uploadLine from "@iconify-icons/ri/upload-line";
 import { useUserStoreHook } from "@/store/modules/user";
-import { getAccountRole } from "@/api/user-account/account";
+import { getAccountRole } from "@/api/auth/user-account/account";
 import { useUpload } from "@/utils/upload/upload";
 import { genderOptions } from "@/views/system/user/utils/enums";
 import { formRules } from "@/views/system/user/utils/rule";
 import { showDialog } from "@/components/HalcyonDialog";
-import { updateInfo } from "@/api/user-account/account";
+import { updateInfo } from "@/api/auth/user-account/account";
 defineOptions({
   name: "Profile"
 });

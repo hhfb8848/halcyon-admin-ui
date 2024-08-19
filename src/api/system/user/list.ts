@@ -1,5 +1,5 @@
 import { http } from "@/utils/http";
-import { baseUrlApi } from "../utils";
+import { baseUrlApi } from "@/api/utils";
 const path = "/sysUser";
 /** 获取用户列表 */
 export const getUserList = (params?: object) => {

@@ -1,5 +1,5 @@
 import { http } from "@/utils/http";
-import { baseUrlApi } from "../utils";
+import { baseUrlApi } from "@/api/utils";
 const path = "/sysRole";
 /** 新增角色 */
 export const addRole = (data?: object) => {

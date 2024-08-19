@@ -1,5 +1,5 @@
 import { http } from "@/utils/http";
-import { baseUrlApi } from "../utils";
+import { baseUrlApi } from "@/api/utils";
 const path = "/sysFile";
 /** 模式一的文件上传，后端上传 */
 export const upload = (data?: object) => {

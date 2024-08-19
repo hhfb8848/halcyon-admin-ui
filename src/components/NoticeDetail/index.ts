@@ -1,7 +1,7 @@
 import { computed, h, ref } from "vue";
 import dayjs from "dayjs";
 import { message as toast } from "@/utils/message";
-import { getNoticeDetail, setRead } from "@/api/notice/notice";
+import { getNoticeDetail, setRead } from "@/api/system/notice/notice";
 import NoticeContent from "./Content.vue"; // Adjust the import path as necessary
 import { deviceDetection } from "@pureadmin/utils";
 import { ElButton } from "element-plus";
@@ -52,7 +52,7 @@ export function openDetail(
     closeOnClickModal: true,
     fullscreen: deviceDetection(),
     fullscreenIcon: true,
-    open: async ({ options }) => {
+    open: async () => {
       const res = await getNoticeDetail(notice.id);
       if (res.code == "H200") {
         detail.value = res.data;
@@ -61,7 +61,7 @@ export function openDetail(
         toast(res.message, { type: "error" });
       }
     },
-    contentRenderer({ options, index }) {
+    contentRenderer() {
       return h(
         "div",
         {
@@ -99,7 +99,7 @@ export function openDetail(
     fullscreenCallBack({ options }) {
       contentHeight.value = options.fullscreen ? "76vh" : "67vh";
     },
-    footerRenderer({ options, index }) {
+    footerRenderer() {
       const handleReadClick = debounce(
         async () => {
           if (notice.readStatus == 1) {

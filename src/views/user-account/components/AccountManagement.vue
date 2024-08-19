@@ -9,7 +9,7 @@ import {
   sendPwdCode,
   updatePassword,
   updateEmail
-} from "@/api/user-account/account";
+} from "@/api/auth/user-account/account";
 import { useUserStoreHook } from "@/store/modules/user";
 import { title } from "process";
 import { formRules } from "../rolus";

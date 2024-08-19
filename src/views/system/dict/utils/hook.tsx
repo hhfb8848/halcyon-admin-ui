@@ -7,7 +7,12 @@ import type { FormItemProps } from "../utils/types";
 import type { PaginationProps } from "@pureadmin/table";
 import { deviceDetection } from "@pureadmin/utils";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
-import { addDict, updateDict, listDict, deleteDict } from "@/api/dict/dict";
+import {
+  addDict,
+  updateDict,
+  listDict,
+  deleteDict
+} from "@/api/system/dict/dict";
 export function useDict() {
   const pagination = reactive<PaginationProps>({
     total: 0,

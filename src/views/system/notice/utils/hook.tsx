@@ -14,8 +14,8 @@ import {
   deleteNotice,
   addNotice,
   updateNotice
-} from "@/api/notice/notice";
-import { listAllSimpleRole } from "@/api/role/role";
+} from "@/api/system/notice/notice";
+import { listAllSimpleRole } from "@/api/system/role/role";
 import { openDetail } from "@/components/NoticeDetail/index";
 export function useSystemNotice() {
   const pagination = reactive<PaginationProps>({
