@@ -189,10 +189,8 @@ export function useSystemNotice() {
     loading.value = true;
     form.current = pagination.currentPage;
     form.size = pagination.pageSize;
-    const { code, data, message } = await getNoticeList(toRaw(form));
-    if (code != "H200") {
-      toast(message, { type: "error" });
-    } else {
+    const { code, data } = await getNoticeList(toRaw(form));
+    if (code == "H200") {
       dataList.value = data.records;
       pagination.total = data.total;
       pagination.pageSize = data.size;

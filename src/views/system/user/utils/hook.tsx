@@ -270,10 +270,8 @@ export function useUserList() {
     loading.value = true;
     form.current = pagination.currentPage;
     form.size = pagination.pageSize;
-    const { code, data, message } = await getUserList(toRaw(form));
-    if (code != "H200") {
-      toast(message, { type: "error" });
-    } else {
+    const { code, data } = await getUserList(toRaw(form));
+    if (code == "H200") {
       dataList.value = data.records;
       pagination.total = data.total;
       pagination.pageSize = data.size;
@@ -529,7 +527,7 @@ export function useUserList() {
           toast("所选角色未改变", { type: "error" });
           return;
         }
-        const { code, message } = await assignRoleForUser({
+        const { code } = await assignRoleForUser({
           userId: row.id,
           roleIds: curData.roleIds
         });
@@ -537,8 +535,6 @@ export function useUserList() {
           toast("角色分配成功", { type: "success" });
           done(); // 关闭弹框
           onSearch(); // 刷新表格数据
-        } else {
-          toast(message, { type: "error" });
         }
       }
     });

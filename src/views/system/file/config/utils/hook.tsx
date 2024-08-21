@@ -101,11 +101,13 @@ export function useFileConfig() {
     loading.value = true;
     form.current = pagination.currentPage;
     form.size = pagination.pageSize;
-    const { data } = await listConfig(toRaw(form));
-    dataList.value = data.records;
-    pagination.total = data.total;
-    pagination.pageSize = data.size;
-    pagination.currentPage = data.current;
+    const { data, code } = await listConfig(toRaw(form));
+    if (code == "H200") {
+      dataList.value = data.records;
+      pagination.total = data.total;
+      pagination.pageSize = data.size;
+      pagination.currentPage = data.current;
+    }
     loading.value = false;
   }
 

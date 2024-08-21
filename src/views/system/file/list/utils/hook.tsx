@@ -185,10 +185,8 @@ export function useFileList() {
         "YYYY-MM-DD HH:mm:ss"
       );
     }
-    const { code, data, message } = await listFile(toRaw(queryForm));
-    if (code != "H200") {
-      toast(message, { type: "error" });
-    } else {
+    const { code, data } = await listFile(toRaw(queryForm));
+    if (code == "H200") {
       dataList.value = data.records;
       pagination.total = data.total;
       pagination.pageSize = data.size;
