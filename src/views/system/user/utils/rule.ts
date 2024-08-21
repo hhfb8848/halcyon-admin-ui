@@ -1,8 +1,8 @@
 import { reactive } from "vue";
 import type { FormRules } from "element-plus";
 
-/** 用户名正则（用户名格式必须为4至16位的字母、数字、下划线组成） */
-const REGEXP_USERNAME = /^[a-zA-Z0-9_]{4,16}$/;
+/** 用户名正则（用户名格式必须为4至20位的字母、数字、下划线组成） */
+const REGEXP_USERNAME = /^[a-zA-Z0-9_]{4,20}$/;
 
 /** 密码正则（密码格式必须在6至20个字符之间） */
 export const REGEXP_PWD = /^[^\u4e00-\u9fa5]{6,20}$/;
@@ -24,7 +24,7 @@ export const formRules = reactive(<FormRules>{
           callback(new Error("请输入用户名"));
         } else if (!REGEXP_USERNAME.test(value)) {
           callback(
-            new Error("用户名格式必须为4至16位的字母、数字、下划线组成")
+            new Error("用户名格式必须为4至20位的字母、数字、下划线组成")
           );
         } else {
           callback();

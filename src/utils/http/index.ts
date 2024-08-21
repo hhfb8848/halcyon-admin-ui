@@ -182,8 +182,16 @@ class PureHttp {
                   message: response.message,
                   type: "error"
                 });
+                break;
               case "H500":
                 messageEl(response.message, { type: "error" });
+                break;
+              case "H510":
+                ElNotification({
+                  title: "操作失败",
+                  message: response.message,
+                  type: "error"
+                });
                 break;
               default:
                 break;

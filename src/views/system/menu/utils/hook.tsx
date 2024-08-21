@@ -65,7 +65,13 @@ export function useMenu() {
     },
     {
       label: "权限标识",
-      prop: "perms"
+      prop: "perms",
+      cellRenderer: ({ row }) =>
+        row.perms ? (
+          <el-text type="success" v-copy:click={row.perms}>
+            {row.perms}
+          </el-text>
+        ) : null
     },
     {
       label: "排序",
