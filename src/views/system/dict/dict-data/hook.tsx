@@ -142,8 +142,6 @@ export function useDictData() {
           toast(`已${row.status === 1 ? "停用" : "启用"}${row.name}`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         onSearch();
       })
@@ -169,8 +167,6 @@ export function useDictData() {
           toast(`已删除${row.name}`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         done(); // 关闭弹框
         onSearch();
@@ -257,16 +253,12 @@ export function useDictData() {
               const res = await addDictData(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             } else {
               // 实际开发先调用修改接口，再进行下面操作
               const res = await updateDictData(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             }
           }
@@ -315,8 +307,6 @@ export function useDictData() {
           toast(`删除成功`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         done(); // 关闭弹框
         tableRef.value.getTableRef().clearSelection();

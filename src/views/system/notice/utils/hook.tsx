@@ -163,8 +163,6 @@ export function useSystemNotice() {
           toast(`已删除"${row.title}`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         done(); // 关闭弹框
         onSearch();
@@ -240,8 +238,6 @@ export function useSystemNotice() {
           const res = await getNoticeDetail(row.id);
           if (res.code == "H200") {
             rowDetail.value = res.data;
-          } else {
-            toast(res.message, { type: "error" });
           }
           // 手动更新
           options.props.formInline.content = rowDetail.value.content;
@@ -269,16 +265,12 @@ export function useSystemNotice() {
               const res = await addNotice(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             } else {
               // 实际开发先调用修改接口，再进行下面操作
               const res = await updateNotice(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             }
           }

@@ -94,8 +94,6 @@ const onSubmit = async (formEl: FormInstance) => {
             useUserStoreHook().SET_BIRTHDAY(updateData.birthday);
             useUserStoreHook().SET_GENDER(updateData.gender);
             done();
-          } else {
-            message(res.message, { type: "error" });
           }
         },
         closeCallBack: ({ args }) => {}
@@ -109,8 +107,6 @@ async function getRole() {
   const res = await getAccountRole();
   if (res.code == "H200") {
     disableUpdateInfo.value.roleArr = res.data;
-  } else {
-    message(res.message, { type: "error" });
   }
 }
 getRole();

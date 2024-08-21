@@ -185,16 +185,12 @@ export function useMenu() {
                 const res = await addMenu(curData);
                 if (res.code == "H200") {
                   chores();
-                } else {
-                  toast(res.message, { type: "error" });
                 }
               } else {
                 // 实际开发先调用新增接口，再进行下面操作
                 const res = await updateMenu(curData);
                 if (res.code == "H200") {
                   chores();
-                } else {
-                  toast(res.message, { type: "error" });
                 }
               }
             } catch (error) {

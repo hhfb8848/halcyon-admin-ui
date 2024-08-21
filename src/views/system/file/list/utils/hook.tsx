@@ -148,8 +148,6 @@ export function useFileList() {
           toast(`已删除"${row.name}`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         done(); // 关闭弹框
         onSearch();
