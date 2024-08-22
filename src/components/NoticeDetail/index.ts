@@ -57,8 +57,6 @@ export function openDetail(
       if (res.code == "H200") {
         detail.value = res.data;
         console.log("detail.value", detail.value);
-      } else {
-        toast(res.message, { type: "error" });
       }
     },
     contentRenderer() {
@@ -111,8 +109,6 @@ export function openDetail(
             toast("设为已读成功", { type: "success" });
             notice.readStatus = 1;
             if (emit) emit("read-success", detail.value);
-          } else {
-            toast(res.message, { type: "error" });
           }
         },
         4000,

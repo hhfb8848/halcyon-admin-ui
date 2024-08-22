@@ -120,8 +120,6 @@ export function useDict() {
           toast(`已${row.status === 1 ? "停用" : "启用"}${row.dictName}`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         done(); // 关闭弹框
         onSearch();
@@ -151,8 +149,6 @@ export function useDict() {
           toast(`已删除"${row.dictName}`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         done(); // 关闭弹框
         onSearch();
@@ -179,9 +175,8 @@ export function useDict() {
     loading.value = true;
     form.current = pagination.currentPage;
     form.size = pagination.pageSize;
-    const { code, data, message } = await listDict(toRaw(form));
+    const { code, data } = await listDict(toRaw(form));
     if (code != "H200") {
-      message(message, { type: "error" });
     } else {
       dataList.value = data.records;
       pagination.total = data.total;
@@ -234,16 +229,12 @@ export function useDict() {
               const res = await addDict(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             } else {
               // 实际开发先调用修改接口，再进行下面操作
               const res = await updateDict(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             }
           }

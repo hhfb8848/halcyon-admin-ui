@@ -113,8 +113,6 @@ async function sendCodeForPwd() {
     }, 1000);
     isShowPwdTime.value = true;
     message("验证码发送成功", { type: "success" });
-  } else {
-    message(res.message, { type: "error" });
   }
 }
 async function sendCodeForEmail() {
@@ -130,8 +128,6 @@ async function sendCodeForEmail() {
     }, 1000);
     isShowEmailTime.value = true;
     message("验证码发送成功", { type: "success" });
-  } else {
-    message(res.message, { type: "error" });
   }
 }
 function handleUpdatePwd() {
@@ -141,8 +137,6 @@ function handleUpdatePwd() {
       if (res.code == "H200") {
         message("密码修改成功", { type: "success" });
         dialogVisible.value = false;
-      } else {
-        message(res.message, { type: "error" });
       }
     }
   });
@@ -156,8 +150,6 @@ function handleUpdateEmail() {
         useUserStoreHook().SET_EMAIL(emailForm.newEmail);
 
         dialogVisible.value = false;
-      } else {
-        message(res.message, { type: "error" });
       }
     }
   });

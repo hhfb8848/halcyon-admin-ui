@@ -215,8 +215,6 @@ export function useUserList() {
           toast(`已${row.status === 1 ? "冻结" : "启用"}${row.username}`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         done(); // 关闭弹框
         onSearch();
@@ -246,8 +244,6 @@ export function useUserList() {
           toast(`已删除"${row.userName}`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         done(); // 关闭弹框
         onSearch();
@@ -274,10 +270,8 @@ export function useUserList() {
     loading.value = true;
     form.current = pagination.currentPage;
     form.size = pagination.pageSize;
-    const { code, data, message } = await getUserList(toRaw(form));
-    if (code != "H200") {
-      toast(message, { type: "error" });
-    } else {
+    const { code, data } = await getUserList(toRaw(form));
+    if (code == "H200") {
       dataList.value = data.records;
       pagination.total = data.total;
       pagination.pageSize = data.size;
@@ -322,8 +316,6 @@ export function useUserList() {
           const res = await getUserDetail(row.id);
           if (res.code == "H200") {
             rowDetail.value = res.data;
-          } else {
-            toast(res.message, { type: "error" });
           }
           // 手动更新
           options.props.formInline.email = rowDetail.value.email;
@@ -349,16 +341,12 @@ export function useUserList() {
               const res = await addUser(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             } else {
               // 实际开发先调用修改接口，再进行下面操作
               const res = await updateUser(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             }
           }
@@ -493,8 +481,6 @@ export function useUserList() {
               pwdForm.password = "";
               done(); // 关闭弹框
               onSearch(); // 刷新表格数据
-            } else {
-              toast(res.message, { type: "error" });
             }
           }
         });
@@ -520,8 +506,6 @@ export function useUserList() {
         const res = await getRoleIdsByUserId(row.id);
         if (res.code == "H200") {
           roleIds.value = res.data;
-        } else {
-          toast(res.message, { type: "error" });
         }
         // 手动更新
         options.props.formInline.roleIds = roleIds.value;
@@ -543,7 +527,7 @@ export function useUserList() {
           toast("所选角色未改变", { type: "error" });
           return;
         }
-        const { code, message } = await assignRoleForUser({
+        const { code } = await assignRoleForUser({
           userId: row.id,
           roleIds: curData.roleIds
         });
@@ -551,8 +535,6 @@ export function useUserList() {
           toast("角色分配成功", { type: "success" });
           done(); // 关闭弹框
           onSearch(); // 刷新表格数据
-        } else {
-          toast(message, { type: "error" });
         }
       }
     });

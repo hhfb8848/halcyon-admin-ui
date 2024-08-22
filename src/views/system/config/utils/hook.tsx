@@ -48,8 +48,6 @@ export function useConfig() {
           toast(`已将"${row.configName}删除`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         done(); // 关闭弹框
         onSearch();
@@ -78,11 +76,13 @@ export function useConfig() {
     loading.value = true;
     form.current = pagination.currentPage;
     form.size = pagination.pageSize;
-    const { data } = await listConfig(toRaw(form));
-    dataList.value = data.records;
-    pagination.total = data.total;
-    pagination.pageSize = data.size;
-    pagination.currentPage = data.current;
+    const { data, code } = await listConfig(toRaw(form));
+    if (code == "H200") {
+      dataList.value = data.records;
+      pagination.total = data.total;
+      pagination.pageSize = data.size;
+      pagination.currentPage = data.current;
+    }
     loading.value = false;
   }
 
@@ -118,8 +118,6 @@ export function useConfig() {
           const res = await getConfig(row.id);
           if (res.code == "H200") {
             rowDetail.value = res.data;
-          } else {
-            toast(res.message, { type: "error" });
           }
           // 手动更新
           options.props.formInline.configKey = rowDetail.value.configKey;
@@ -144,16 +142,12 @@ export function useConfig() {
               const res = await addConfig(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             } else {
               // 实际开发先调用修改接口，再进行下面操作
               const res = await updateConfig(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             }
           }
@@ -165,8 +159,6 @@ export function useConfig() {
     const res = await refreshCache();
     if (res.code == "H200") {
       toast("缓存刷新成功", { type: "success" });
-    } else {
-      toast(res.message, { type: "error" });
     }
   }
 

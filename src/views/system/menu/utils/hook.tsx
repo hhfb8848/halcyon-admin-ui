@@ -65,7 +65,13 @@ export function useMenu() {
     },
     {
       label: "权限标识",
-      prop: "perms"
+      prop: "perms",
+      cellRenderer: ({ row }) =>
+        row.perms ? (
+          <el-text type="success" v-copy:click={row.perms}>
+            {row.perms}
+          </el-text>
+        ) : null
     },
     {
       label: "排序",
@@ -185,16 +191,12 @@ export function useMenu() {
                 const res = await addMenu(curData);
                 if (res.code == "H200") {
                   chores();
-                } else {
-                  toast(res.message, { type: "error" });
                 }
               } else {
                 // 实际开发先调用新增接口，再进行下面操作
                 const res = await updateMenu(curData);
                 if (res.code == "H200") {
                   chores();
-                } else {
-                  toast(res.message, { type: "error" });
                 }
               }
             } catch (error) {

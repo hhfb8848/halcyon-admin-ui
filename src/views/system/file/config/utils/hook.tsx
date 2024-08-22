@@ -49,8 +49,6 @@ export function useFileConfig() {
           toast(`已将"${row.name}删除`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         done(); // 关闭弹框
         onSearch();
@@ -77,8 +75,6 @@ export function useFileConfig() {
           toast(`已将"${row.name}设为主配置`, {
             type: "success"
           });
-        } else {
-          toast(res.message, { type: "error" });
         }
         done(); // 关闭弹框
         onSearch();
@@ -105,11 +101,13 @@ export function useFileConfig() {
     loading.value = true;
     form.current = pagination.currentPage;
     form.size = pagination.pageSize;
-    const { data } = await listConfig(toRaw(form));
-    dataList.value = data.records;
-    pagination.total = data.total;
-    pagination.pageSize = data.size;
-    pagination.currentPage = data.current;
+    const { data, code } = await listConfig(toRaw(form));
+    if (code == "H200") {
+      dataList.value = data.records;
+      pagination.total = data.total;
+      pagination.pageSize = data.size;
+      pagination.currentPage = data.current;
+    }
     loading.value = false;
   }
 
@@ -157,8 +155,6 @@ export function useFileConfig() {
           const res = await getConfig(row.id);
           if (res.code == "H200") {
             rowDetail.value = res.data;
-          } else {
-            toast(res.message, { type: "error" });
           }
           // 手动更新
           options.props.formInline.config = rowDetail.value.config;
@@ -182,16 +178,12 @@ export function useFileConfig() {
               const res = await addConfig(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             } else {
               // 实际开发先调用修改接口，再进行下面操作
               const res = await updateConfig(curData);
               if (res.code == "H200") {
                 chores();
-              } else {
-                toast(res.message, { type: "error" });
               }
             }
           }

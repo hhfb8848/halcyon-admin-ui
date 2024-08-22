@@ -14,7 +14,7 @@ import NProgress from "../progress";
 import { getToken, formatToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
 import { message as messageEl } from "@/utils/message";
-import { inject } from "vue";
+import { ElNotification } from "element-plus";
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
   // 请求超时时间
@@ -177,7 +177,21 @@ class PureHttp {
                 messageEl(response.message, { type: "error" });
                 break;
               case "H403":
+                ElNotification({
+                  title: "错误",
+                  message: response.message,
+                  type: "error"
+                });
+                break;
+              case "H500":
                 messageEl(response.message, { type: "error" });
+                break;
+              case "H510":
+                ElNotification({
+                  title: "操作失败",
+                  message: response.message,
+                  type: "error"
+                });
                 break;
               default:
                 break;
