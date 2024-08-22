@@ -5,9 +5,15 @@ import { addDialog } from "@/components/ReDialog";
 import { reactive, ref, onMounted, h } from "vue";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { cloneDeep, isAllEmpty, deviceDetection } from "@pureadmin/utils";
-import { addMenu, listMenu, updateMenu } from "@/api/system/menu/menu";
+import {
+  addMenu,
+  listMenu,
+  updateMenu,
+  deleteMenu
+} from "@/api/system/menu/menu";
 import { menuTypeOptions } from "./enums";
 import { getMenuType } from "./types";
+import { showDialog } from "@/components/HalcyonDialog";
 export function useMenu() {
   const form = reactive({
     title: ""
@@ -210,10 +216,27 @@ export function useMenu() {
   }
 
   function handleDelete(row) {
-    toast(`您删除了菜单名称为${row.title}的这条数据`, {
-      type: "success"
+    showDialog("警告", {
+      contentRenderer: () => (
+        <p style="text-align: center;margin-bottom:20px">
+          确认要删除
+          <strong style="color:var(--el-color-danger);margin:0 5px">
+            {row.title}
+          </strong>
+          吗？此菜单的子菜单也会被删除
+        </p>
+      ),
+      beforeSure: async done => {
+        const res = await deleteMenu(row.id);
+        if (res.code == "H200") {
+          toast(`已删除"${row.title}`, {
+            type: "success"
+          });
+        }
+        done(); // 关闭弹框
+        onSearch();
+      }
     });
-    onSearch();
   }
   onMounted(() => {
     onSearch();

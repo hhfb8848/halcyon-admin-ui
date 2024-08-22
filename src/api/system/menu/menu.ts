@@ -14,6 +14,10 @@ export const listMenu = (data?: object) => {
 export const updateMenu = (data?: object) => {
   return http.request<any>("put", baseUrlApi(`${path}/update`), { data });
 };
+
+export const deleteMenu = (id: number) => {
+  return http.request<any>("delete", baseUrlApi(`${path}/delete/${id}`));
+};
 /** 简单菜单列表 */
 export const listSimpleMenu = (params?: object) => {
   return http.request<any>("get", baseUrlApi(`${path}/listSimple`), {
