@@ -3,6 +3,7 @@ import GroupLine from "@iconify-icons/ri/group-line";
 import Question from "@iconify-icons/ri/question-answer-line";
 import CheckLine from "@iconify-icons/ri/chat-check-line";
 import Smile from "@iconify-icons/ri/star-smile-line";
+import dayjs from "dayjs";
 export function useWelcome() {
   // 项目总数，传感数据点，触发器数，接入设备数
   const chartData = reactive([
@@ -70,21 +71,82 @@ export function useWelcome() {
     {
       name: "数据传感点",
       // 按月
-      data: [100, 200, 0, 40, 50, 60, 70, 80, 90, 100, 34, 43]
+      data: [100, 200, 0, 40, 50, 60, 70, 80, 90, 100, 34, 43],
+      itemStyle: {
+        color: "#e85f33"
+      },
+      emphasis: {
+        focus: "series"
+      }
     },
     {
-      name: "触发器",
+      name: "触发器数",
       // 按月
-      data: [100, 200, 0, 40, 50, 60, 70, 83, 90, 10, 34, 43]
+      data: [100, 200, 0, 40, 50, 60, 70, 83, 90, 10, 34, 43],
+      itemStyle: {
+        color: "#26ce83"
+      },
+      emphasis: {
+        focus: "series"
+      }
     },
     {
-      name: "接入设备",
+      name: "接入设备数",
       // 按月
-      data: [0, 0, 0, 40, 50, 60, 70, 83, 90, 10, 34, 43]
+      data: [0, 0, 0, 40, 50, 60, 70, 83, 90, 10, 34, 43],
+      itemStyle: {
+        color: "#7846e5"
+      },
+      emphasis: {
+        focus: "series"
+      }
+    }
+  ]);
+  // 报警数据
+  const alarmData = reactive([
+    {
+      name: "(设傍屯)2号提升泵异常报警",
+      alarmTime: dayjs().format("YYYY-MM-DD HH:mm:ss")
+    },
+    {
+      name: "	(甘水屯)清水池水位异常报警",
+      alarmTime: dayjs().format("YYYY-MM-DD HH:mm:ss")
+    },
+    {
+      name: "(甘水屯)1号清水泵异常报警",
+      alarmTime: dayjs().format("YYYY-MM-DD HH:mm:ss")
+    },
+    {
+      name: "(坡莫屯)2号曝气机异常报警",
+      alarmTime: dayjs().format("YYYY-MM-DD HH:mm:ss")
+    },
+    {
+      name: "(甘水屯)3号清水泵异常报警",
+      alarmTime: dayjs().format("YYYY-MM-DD HH:mm:ss")
+    },
+    {
+      name: "(甘水屯)4号清水泵异常报警",
+      alarmTime: dayjs().format("YYYY-MM-DD HH:mm:ss")
     }
   ]);
   function onProjectChange() {
-    // curProjectData[0].da
+    // 随机改变数据
+    curProjectData[0].data = generateRandomData();
+    curProjectData[1].data = generateRandomData();
+    curProjectData[2].data = generateRandomData();
   }
-  return { chartData, projectList, curProject, curProjectData };
+  function generateRandomData(num = 12, min = 0, max = 10000) {
+    return Array.from(
+      { length: num },
+      () => Math.floor(Math.random() * (max - min + 1)) + min
+    );
+  }
+  return {
+    chartData,
+    projectList,
+    curProject,
+    curProjectData,
+    alarmData,
+    onProjectChange
+  };
 }

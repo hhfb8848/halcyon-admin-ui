@@ -30,6 +30,7 @@ watch(
     });
     setOptions({
       container: ".line-analyse-card",
+      animationDuration: 2000,
       tooltip: {
         trigger: "axis"
       },
@@ -74,5 +75,5 @@ watch(
 </script>
 
 <template>
-  <div ref="lineAnalyseRef" style="width: 100%; height: 365px" />
+  <div ref="lineAnalyseRef" style="width: 100%; height: 565px" />
 </template>
