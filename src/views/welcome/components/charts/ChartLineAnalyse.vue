@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useDark, useECharts } from "@pureadmin/utils";
 import { type PropType, ref, computed, watch, nextTick } from "vue";
+import * as echarts from "echarts";
 
 const props = defineProps({
   curData: {
@@ -25,7 +26,7 @@ watch(
     const names = props.curData.map((item: any) => item.name);
     const lineData = props.curData.map((item: any) => {
       item.type = "line";
-      item.stack = "Total";
+      item.smooth = true;
       return item;
     });
     setOptions({
@@ -64,7 +65,22 @@ watch(
       yAxis: {
         type: "value"
       },
-      series: lineData
+      series: props.curData.map((item: any) => ({
+        name: item.name,
+        type: "line",
+        smooth: true,
+        data: item.data,
+        color: item.itemStyle.color,
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: `${item.itemStyle.color}10` }, // 起始颜色更淡
+            { offset: 1, color: `${item.itemStyle.color}03` } // 渐变到几乎透明
+          ])
+        },
+        emphasis: {
+          focus: "series"
+        }
+      }))
     });
   },
   {
@@ -72,6 +88,15 @@ watch(
     immediate: true
   }
 );
+
+// 将十六进制颜色转为RGB
+function hexToRgb(hex: string) {
+  const bigint = parseInt(hex.slice(1), 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `${r}, ${g}, ${b}`;
+}
 </script>
 
 <template>
