@@ -41,6 +41,9 @@ importers:
       animate.css:
         specifier: ^4.1.1
         version: 4.1.1
+      autofit.js:
+        specifier: ^3.1.1
+        version: 3.1.1
       axios:
         specifier: ^1.6.8
         version: 1.6.8
@@ -1389,6 +1392,9 @@ packages:
 
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+
+  autofit.js@3.1.1:
+    resolution: {integrity: sha512-ECW7wNUW1e6F+c0lRc9X+xyCrbqY3FsSnCObNDhQAo77E4/45tWx0YeLuiqA7qxrnxl2Plh3lF/pC+vzXC+8ZA==}
 
   autoprefixer@10.4.19:
     resolution: {integrity: sha512-BaENR2+zBZ8xXhM4pUaKUxlVdxZ0EZhjvbopwnXmxRUfqDmwSpC2lAi/QXvx7NRdPCo1WKEcEF6mV64si1z4Ew==}
@@ -4895,6 +4901,8 @@ snapshots:
   async-validator@4.2.5: {}
 
   asynckit@0.4.0: {}
+
+  autofit.js@3.1.1: {}
 
   autoprefixer@10.4.19(postcss@8.4.38):
     dependencies:
