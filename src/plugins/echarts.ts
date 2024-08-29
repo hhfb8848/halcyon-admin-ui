@@ -1,6 +1,12 @@
 import type { App } from "vue";
 import * as echarts from "echarts/core";
-import { PieChart, BarChart, LineChart, GaugeChart } from "echarts/charts";
+import {
+  PieChart,
+  BarChart,
+  LineChart,
+  GaugeChart,
+  MapChart
+} from "echarts/charts";
 import { CanvasRenderer, SVGRenderer } from "echarts/renderers";
 import {
   GridComponent,
@@ -11,7 +17,8 @@ import {
   ToolboxComponent,
   TooltipComponent,
   DataZoomComponent,
-  VisualMapComponent
+  VisualMapComponent,
+  GeoComponent
 } from "echarts/components";
 
 const { use } = echarts;
@@ -31,7 +38,9 @@ use([
   TooltipComponent,
   DataZoomComponent,
   VisualMapComponent,
-  GaugeChart
+  GaugeChart,
+  GeoComponent,
+  MapChart
 ]);
 
 /**

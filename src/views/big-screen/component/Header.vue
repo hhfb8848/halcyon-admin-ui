@@ -141,7 +141,7 @@ onMounted(() => {
   .top-right {
     position: absolute;
     top: 25px;
-    font-size: 20px;
+    font-size: 19px;
     display: flex;
     align-items: center;
     color: #00aaff;

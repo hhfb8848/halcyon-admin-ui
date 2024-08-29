@@ -3,6 +3,7 @@ import autofit from "autofit.js";
 import { onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import Header from "./component/Header.vue";
+import Body from "./component/Body.vue";
 defineOptions({
   name: "BigScreen"
 });
@@ -16,6 +17,7 @@ const router = useRouter();
 <template>
   <div class="big-screen-wrapper">
     <Header />
+    <Body />
   </div>
 </template>
 
