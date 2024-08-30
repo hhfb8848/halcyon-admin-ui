@@ -8,7 +8,6 @@ import type { PaginationProps } from "@pureadmin/table";
 import { deviceDetection } from "@pureadmin/utils";
 import { listRole } from "@/api/system/role/role";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
-
 export function useDict() {
   const form = reactive({
     name: "",
