@@ -31,10 +31,6 @@ export const optionHandle = (
         { lte: 9, label: "1-9个" } // 不指定 min，表示 min 为无限大（-Infinity）。
       ],
       inRange: {
-        // 渐变颜色，从小到大
-        // FFFFFF,EDF7FD,DBF0FA,C9E8F8,B7E1F6,A5D9F3,93D2F1,81CAEF,6FC2EC,5DBBEA,4AB3E8,38ACE5,26A4E3,1C9AD9,1A8DC7,
-        // 1781B5,
-        // 1573A2,136790,105A7E,0E4D6C,0C405A,093348,072636,051A24,020D12
         color: [
           // "#EDF7FD",
           "rgba(237,247,253,.8)",
@@ -160,7 +156,7 @@ export const optionHandle = (
         data: mapData,
         type: "effectScatter",
         coordinateSystem: "geo",
-        symbolSize: function (val: any) {
+        symbolSize: function () {
           return 4;
           // return val[2] / 50;
         },

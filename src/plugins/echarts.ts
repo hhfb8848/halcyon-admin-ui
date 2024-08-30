@@ -1,11 +1,14 @@
 import type { App } from "vue";
 import * as echarts from "echarts/core";
+import ECharts from "vue-echarts";
 import {
   PieChart,
   BarChart,
   LineChart,
   GaugeChart,
-  MapChart
+  MapChart,
+  EffectScatterChart,
+  CustomChart
 } from "echarts/charts";
 import { CanvasRenderer, SVGRenderer } from "echarts/renderers";
 import {
@@ -40,7 +43,9 @@ use([
   VisualMapComponent,
   GaugeChart,
   GeoComponent,
-  MapChart
+  MapChart,
+  EffectScatterChart,
+  CustomChart
 ]);
 
 /**
@@ -49,6 +54,7 @@ use([
  */
 export function useEcharts(app: App) {
   app.config.globalProperties.$echarts = echarts;
+  app.component("v-chart", ECharts);
 }
 
 export default echarts;

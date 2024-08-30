@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { ref, reactive, nextTick } from "vue";
+import { GETNOBASE } from "@/api/utils";
 import { registerMap, getMap } from "echarts/core";
 import { optionHandle, regionCodes } from "./centerMap";
 import BorderBox13 from "@/components/DataV/border-box-13";
 import { ElMessage } from "element-plus";
 import type { MapdataType } from "./centerMap";
-
+import { getMapData } from "@/api/big-screen";
 const option = ref({});
-const code = ref("china"); //china 代表中国 其他地市是行政编码
+//china 代表中国 其他地市是行政编码
+const code = ref("china");
 
 withDefaults(
   defineProps<{
@@ -18,6 +20,65 @@ withDefaults(
     title: "地图"
   }
 );
+
+const dataSetHandle = async (regionCode: string, list: object[]) => {
+  const geojson: any = await getGeojson(regionCode);
+  let cityCenter: any = {};
+  let mapData: MapdataType[] = [];
+  //获取当前地图每块行政区中心点
+  geojson.features.forEach((element: any) => {
+    cityCenter[element.properties.name] =
+      element.properties.centroid || element.properties.center;
+  });
+  //当前中心点如果有此条数据中心点则赋值x，y当然这个x,y也可以后端返回进行大点，前端省去多行代码
+  list.forEach((item: any) => {
+    if (cityCenter[item.name]) {
+      mapData.push({
+        name: item.name,
+        value: cityCenter[item.name].concat(item.value)
+      });
+    }
+  });
+  await nextTick();
+
+  option.value = optionHandle(regionCode, [], mapData);
+};
+
+const getData = async (regionCode: string) => {
+  const { code, data } = await getMapData({ regionCode: regionCode });
+  console.log("data", data);
+  dataSetHandle(regionCode, []);
+};
+const getGeojson = (regionCode: string) => {
+  return new Promise<boolean>(async resolve => {
+    let mapjson = getMap(regionCode);
+    if (mapjson) {
+      mapjson = mapjson.geoJSON;
+      resolve(mapjson);
+    } else {
+      mapjson = await GETNOBASE(`./map-geojson/${regionCode}.json`).then(
+        data => data
+      );
+      code.value = regionCode;
+      registerMap(regionCode, {
+        geoJSON: mapjson as any,
+        specialAreas: {}
+      });
+      resolve(mapjson);
+    }
+  });
+};
+getData(code.value);
+
+const mapClick = (params: any) => {
+  console.log(params);
+  let xzqData = regionCodes[params.name];
+  if (xzqData) {
+    getData(xzqData.adcode);
+  } else {
+    ElMessage.warning("该地区暂未开通");
+  }
+};
 </script>
 
 <template>
@@ -29,8 +90,16 @@ withDefaults(
     </div>
     <div class="map-wrap">
       <BorderBox13>
-        <div v-if="code !== 'china'" class="china">中国</div>
-        <div ref="centerMapRef" class="chart" :option="option" />
+        <div v-if="code !== 'china'" class="china" @click="getData('china')">
+          中国
+        </div>
+        <v-chart
+          v-if="JSON.stringify(option) != '{}'"
+          ref="centerMapRef"
+          class="chart"
+          :option="option"
+          @click="mapClick"
+        />
       </BorderBox13>
     </div>
   </div>
@@ -46,6 +115,7 @@ withDefaults(
     justify-content: center;
     padding-top: 10px;
     box-sizing: border-box;
+
     .title-text {
       font-size: 28px;
       font-weight: 900;
@@ -81,7 +151,6 @@ withDefaults(
   .map-wrap {
     height: 580px;
     width: 100%;
-    // padding: 0 0 10px 0;
     box-sizing: border-box;
     position: relative;
 

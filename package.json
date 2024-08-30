@@ -79,6 +79,7 @@
     "sortablejs": "^1.15.2",
     "typeit": "^8.8.3",
     "vue": "^3.4.24",
+    "vue-echarts": "^7.0.3",
     "vue-router": "^4.3.2",
     "vue-tippy": "^6.4.1",
     "vue-types": "^5.1.1"
