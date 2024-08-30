@@ -1,7 +1,7 @@
 name: Build and Deploy HalcyonVue
 on:
   push:
-    branches: [ "master" ]
+    branches: ["main"]
 
 jobs:
   admin-deploy-job:
@@ -40,7 +40,7 @@ jobs:
         run: |
           pnpm install --no-frozen-lockfile
           pnpm build
-  
+
       - name: Deploy 🚀
         uses: appleboy/scp-action@master
         with:
@@ -48,6 +48,5 @@ jobs:
           username: ${{ secrets.REMOTE_USERNAME }}
           password: ${{ secrets.REMOTE_SSH_KEY }}
           port: 22
-          source: 'halcyon-admin/dist/'
+          source: "halcyon-admin/dist/"
           target: /halcyon/vue-admin
-           
