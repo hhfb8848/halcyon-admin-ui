@@ -35,5 +35,16 @@ export default [
       title: "个人中心",
       showLink: false
     }
+  },
+  {
+    path: "/big-screen",
+    name: "BigScreen",
+    component: () => import("@/views/big-screen/index.vue"),
+    meta: {
+      title: "数据大屏",
+      showLink: true,
+      sortOrder: 0,
+      icon: "ion:grid-outline"
+    }
   }
 ] satisfies Array<RouteConfigsTable>;
