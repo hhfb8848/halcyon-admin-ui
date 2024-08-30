@@ -163,6 +163,7 @@ export function useConfig() {
   }
 
   onMounted(async () => {
+    console.log("跳转配置管理页面");
     onSearch();
   });
 

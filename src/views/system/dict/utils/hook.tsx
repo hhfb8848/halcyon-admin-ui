@@ -250,6 +250,7 @@ export function useDict() {
     dictDataDrawer.value = newVal;
   }
   onMounted(async () => {
+    console.log("跳转字典管理页面");
     onSearch();
   });
 

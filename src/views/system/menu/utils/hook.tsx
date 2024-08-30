@@ -239,6 +239,7 @@ export function useMenu() {
     });
   }
   onMounted(() => {
+    console.log("跳转菜单管理页面");
     onSearch();
   });
 
