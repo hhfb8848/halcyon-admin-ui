@@ -48,5 +48,5 @@ jobs:
           username: ${{ secrets.REMOTE_USERNAME }}
           password: ${{ secrets.REMOTE_SSH_KEY }}
           port: 22
-          source: "halcyon-admin/dist/"
+          source: "./dist/*"
           target: /halcyon/vue-admin
