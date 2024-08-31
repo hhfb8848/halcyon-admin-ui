@@ -47,6 +47,6 @@ jobs:
           server: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USERNAME }}
           password: ${{ secrets.REMOTE_SSH_KEY }}
-          local-dir: ./dist
-          remote-dir: /halcyon/vue-admin
+          local-dir: ./dist/
+          remote-dir: halcyon/vue-admin/
           protocol: ftps
