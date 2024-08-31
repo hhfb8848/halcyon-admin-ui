@@ -5,7 +5,7 @@ on:
 
 jobs:
   admin-deploy-job:
-    runs-on:  windows-latest
+    runs-on: window
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -38,16 +38,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm install --no-frozen-lockfile
+          pnpm install
           pnpm build
 
-
-      - name: Install OpenSSH Client
-        run: |
-          Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
-
-      - name: Deploy using SCP
-        run: |
-          scp -r ./dist/* ${{ secrets.REMOTE_USERNAME }}@${{ secrets.REMOTE_HOST }}:/halcyon/vue-admin
-        env:
-          SSH_PASSWORD: ${{ secrets.REMOTE_PASSWORD }}
+      - name: Deploy via SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USERNAME }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          local-dir: ./dist
+          remote-dir: /halcyon/vue-admin
+          protocol: sftp
