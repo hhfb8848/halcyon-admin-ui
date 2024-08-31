@@ -49,4 +49,4 @@ jobs:
           password: ${{ secrets.REMOTE_SSH_KEY }}
           local-dir: ./dist
           remote-dir: /halcyon/vue-admin
-          protocol: sftp
+          protocol: ftps
