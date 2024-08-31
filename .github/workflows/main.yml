@@ -41,7 +41,7 @@ jobs:
           pnpm install
           pnpm build
 
-      - name: Deploy via SFTP
+      - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.REMOTE_HOST }}
