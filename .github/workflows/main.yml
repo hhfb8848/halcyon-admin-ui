@@ -5,7 +5,7 @@ on:
 
 jobs:
   admin-deploy-job:
-    runs-on: window
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
