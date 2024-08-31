@@ -169,7 +169,7 @@ export function useUserList() {
     },
     {
       label: "简介",
-      prop: "remark",
+      prop: "intro",
       minWidth: 160
     },
 
