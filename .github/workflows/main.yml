@@ -5,7 +5,7 @@ on:
 
 jobs:
   admin-deploy-job:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,9 +24,10 @@ jobs:
 
       - name: Get pnpm store directory
         id: pnpm-cache
-        shell: bash
+        shell: pwsh
         run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+          $storePath = pnpm store path
+          echo "STORE_PATH=$storePath" >> $env:GITHUB_OUTPUT
 
       - uses: actions/cache@v3
         name: Setup pnpm cache
@@ -41,12 +42,40 @@ jobs:
           pnpm install --no-frozen-lockfile
           pnpm build
 
+      - name: Check if pscp is installed
+        id: check_pscp
+        shell: pwsh
+        run: |
+          if (Get-Command pscp -ErrorAction SilentlyContinue) {
+            Write-Host "pscp is installed"
+          } else {
+            Write-Host "pscp is not installed"
+            exit 1
+          }
+
+      - name: Install pscp
+        if: steps.check_pscp.outcome == 'failure'
+        shell: pwsh
+        run: |
+          # Download pscp.exe
+          $url = "https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe"
+          $output = "$env:USERPROFILE\pscp.exe"
+          Invoke-WebRequest -Uri $url -OutFile $output
+
+          # Add pscp.exe to PATH
+          $env:PATH += ";$env:USERPROFILE"
+          [System.Environment]::SetEnvironmentVariable('Path', $env:PATH, [System.EnvironmentVariableTarget]::Machine)
+          Write-Host "pscp installed and added to PATH"
+
       - name: Deploy 🚀
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USERNAME }}
-          password: ${{ secrets.REMOTE_SSH_KEY }}
-          port: 22
-          source: "./dist/*"
-          target: /halcyon/vue-admin
+        run: |
+          # Deploy using SCP via PowerShell
+          $source = ".\dist\*"
+          $username = "${{ secrets.REMOTE_USERNAME }}"
+          $password = "${{ secrets.REMOTE_PASSWORD }}"
+          $host = "${{ secrets.REMOTE_HOST }}"
+          $destination = "$username@$host:/halcyon/vue-admin"
+
+          # Use PSCP to deploy files
+          & pscp -pw $password -r $source $destination
+        shell: pwsh
