@@ -38,16 +38,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm install
+          pnpm install --frozen-lockfile
           pnpm build
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Deploy 🚀
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          server: ${{ secrets.REMOTE_HOST }}
+          host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USERNAME }}
           password: ${{ secrets.REMOTE_SSH_KEY }}
-          local-dir: ./dist/
-          remote-dir: halcyon/vue-admin/
-          protocol: ftps
           port: 22
+          local_path: "halcyon-admin/dist/"
+          target: /halcyon/vue-admin
