@@ -42,35 +42,13 @@ jobs:
           pnpm install --no-frozen-lockfile
           pnpm build
 
-      - name: Ensure pscp is installed
-        shell: pwsh
-        run: |
-          $pscpPath = "$env:USERPROFILE\pscp.exe"
-          if (-Not (Test-Path $pscpPath)) {
-            Write-Host "pscp not found, downloading..."
-            # Download pscp.exe
-            $url = "https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe"
-            Invoke-WebRequest -Uri $url -OutFile $pscpPath
-            Write-Host "pscp installed"
-          } else {
-            Write-Host "pscp is already installed"
-          }
-          # Add pscp.exe to PATH
-          $env:PATH += ";$env:USERPROFILE"
-          [System.Environment]::SetEnvironmentVariable('Path', $env:PATH, [System.EnvironmentVariableTarget]::Machine)
-          # Verify pscp is in PATH
-          $pscpPathCheck = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
-          Write-Host "PATH contains: $pscpPathCheck"
-
-      - name: Deploy 🚀
-        run: |
-          # Deploy using SCP via PowerShell
-          $source = ".\dist\*"
-          $username = "${{ secrets.REMOTE_USERNAME }}"
-          $password = "${{ secrets.REMOTE_PASSWORD }}"
-          $remoteHost = "${{ secrets.REMOTE_HOST }}"
-          $destination = "${username}@${remoteHost}:/halcyon/vue-admin"
-
-          # Use PSCP to deploy files
-          & "${env:USERPROFILE}\pscp.exe" -pw $password -r -batch $source $destination
-        shell: pwsh
+      - name: Deploy
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      with:
+          username: ${{ secrets.FTP_USERNAME }}
+          server: ${{ secrets.REMOTE_HOST }}
+          port: ${{ secrets.FTP_PORT }}
+          local_path: './static/*'
+          remote_path: '/var/www/app'
+          sftp_only: true
+          password: ${{ secrets.FTP_PASSWORD }}
