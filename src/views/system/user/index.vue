@@ -16,7 +16,7 @@ import Password from "@iconify-icons/ri/lock-password-line";
 import More from "@iconify-icons/ep/more-filled";
 
 defineOptions({
-  name: "SystemUserList"
+  name: "SystemUser"
 });
 
 const formRef = ref();
