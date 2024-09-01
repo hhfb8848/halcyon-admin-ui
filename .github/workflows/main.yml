@@ -5,7 +5,7 @@ on:
 
 jobs:
   admin-deploy-job:
-    runs-on: ubuntu-20.04
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,11 +42,10 @@ jobs:
           pnpm build
 
       - name: Deploy 🚀
-        uses: appleboy/scp-action@v0.1.7
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USERNAME }}
-          password: ${{ secrets.REMOTE_SSH_KEY }}
-          port: 22
-          source: "./dist/*"
-          target: /halcyon/vue-admin
+          server: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWROD }}
+          local-dir: ./dist/
+          server-dir: halcyon/vue-admin/
