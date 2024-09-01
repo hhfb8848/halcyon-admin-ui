@@ -58,6 +58,9 @@ jobs:
           # Add pscp.exe to PATH
           $env:PATH += ";$env:USERPROFILE"
           [System.Environment]::SetEnvironmentVariable('Path', $env:PATH, [System.EnvironmentVariableTarget]::Machine)
+          # Verify pscp is in PATH
+          $pscpPathCheck = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
+          Write-Host "PATH contains: $pscpPathCheck"
 
       - name: Deploy 🚀
         run: |
@@ -69,5 +72,5 @@ jobs:
           $destination = "${username}@${remoteHost}:/halcyon/vue-admin"
 
           # Use PSCP to deploy files
-          & pscp -pw $password -r $source $destination
+          & "${env:USERPROFILE}\pscp.exe" -pw $password -r $source $destination
         shell: pwsh
