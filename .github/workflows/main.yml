@@ -42,10 +42,10 @@ jobs:
           pnpm build
 
       - name: Deploy 🚀
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: appleboy/ssh-action@v0.1.3
         with:
           server: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWROD }}
-          local-dir: ./dist/
-          server-dir: halcyon/vue-admin/
+          username: ${{ secrets.REMOTE_USERNAME  }}
+          password: ${{ secrets.REMOTE_SSH_KEY }}
+          script: |
+            scp -r ./dist/ ${{ secrets.REMOTE_USERNAME  }}@${{ secrets.REMOTE_HOST }}:/haclyon/vue-admin/
