@@ -72,5 +72,5 @@ jobs:
           $destination = "${username}@${remoteHost}:/halcyon/vue-admin"
 
           # Use PSCP to deploy files
-          & "${env:USERPROFILE}\pscp.exe" -pw $password -r $source $destination
+          & "${env:USERPROFILE}\pscp.exe" -pw $password -r -batch $source $destination
         shell: pwsh
