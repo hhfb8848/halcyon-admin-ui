@@ -5,7 +5,7 @@ on:
 
 jobs:
   admin-deploy-job:
-    runs-on: windows-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,11 +42,11 @@ jobs:
           pnpm build
 
       - name: Deploy 🚀
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USERNAME }}
           password: ${{ secrets.REMOTE_SSH_KEY }}
           port: 22
-          local_path: "halcyon-admin/dist/"
+          source: "halcyon-admin/dist/"
           target: /halcyon/vue-admin
