@@ -5,7 +5,7 @@ on:
 
 jobs:
   admin-deploy-job:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -13,7 +13,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - uses: pnpm/action-setup@v3
         name: Install pnpm
@@ -24,10 +24,9 @@ jobs:
 
       - name: Get pnpm store directory
         id: pnpm-cache
-        shell: pwsh
+        shell: bash
         run: |
-          $storePath = pnpm store path
-          echo "STORE_PATH=$storePath" >> $env:GITHUB_OUTPUT
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v3
         name: Setup pnpm cache
@@ -42,13 +41,12 @@ jobs:
           pnpm install --no-frozen-lockfile
           pnpm build
 
-      - name: Deploy
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      - name: Deploy 🚀
+        uses: appleboy/scp-action@v0.1.7
         with:
-            username: ${{ secrets.FTP_USERNAME }}
-            server: ${{ secrets.REMOTE_HOST }}
-            port: ${{ secrets.FTP_PORT }}
-            local_path: './static/*'
-            remote_path: '/var/www/app'
-            sftp_only: true
-            password: ${{ secrets.FTP_PASSWORD }}
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USERNAME }}
+          password: ${{ secrets.REMOTE_SSH_KEY }}
+          port: 22
+          source: "./dist/*"
+          target: /halcyon/vue-admin
