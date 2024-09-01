@@ -43,12 +43,12 @@ jobs:
           pnpm build
 
       - name: Deploy
-      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-      with:
-          username: ${{ secrets.FTP_USERNAME }}
-          server: ${{ secrets.REMOTE_HOST }}
-          port: ${{ secrets.FTP_PORT }}
-          local_path: './static/*'
-          remote_path: '/var/www/app'
-          sftp_only: true
-          password: ${{ secrets.FTP_PASSWORD }}
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+            username: ${{ secrets.FTP_USERNAME }}
+            server: ${{ secrets.REMOTE_HOST }}
+            port: ${{ secrets.FTP_PORT }}
+            local_path: './static/*'
+            remote_path: '/var/www/app'
+            sftp_only: true
+            password: ${{ secrets.FTP_PASSWORD }}
