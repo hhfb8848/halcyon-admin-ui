@@ -42,30 +42,22 @@ jobs:
           pnpm install --no-frozen-lockfile
           pnpm build
 
-      - name: Check if pscp is installed
-        id: check_pscp
+      - name: Ensure pscp is installed
         shell: pwsh
         run: |
-          if (Get-Command pscp -ErrorAction SilentlyContinue) {
-            Write-Host "pscp is installed"
+          $pscpPath = "$env:USERPROFILE\pscp.exe"
+          if (-Not (Test-Path $pscpPath)) {
+            Write-Host "pscp not found, downloading..."
+            # Download pscp.exe
+            $url = "https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe"
+            Invoke-WebRequest -Uri $url -OutFile $pscpPath
+            Write-Host "pscp installed"
           } else {
-            Write-Host "pscp is not installed"
-            exit 1
+            Write-Host "pscp is already installed"
           }
-
-      - name: Install pscp
-        if: steps.check_pscp.outcome == 'failure'
-        shell: pwsh
-        run: |
-          # Download pscp.exe
-          $url = "https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe"
-          $output = "$env:USERPROFILE\pscp.exe"
-          Invoke-WebRequest -Uri $url -OutFile $output
-
           # Add pscp.exe to PATH
           $env:PATH += ";$env:USERPROFILE"
           [System.Environment]::SetEnvironmentVariable('Path', $env:PATH, [System.EnvironmentVariableTarget]::Machine)
-          Write-Host "pscp installed and added to PATH"
 
       - name: Deploy 🚀
         run: |
