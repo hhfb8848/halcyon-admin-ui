@@ -65,8 +65,8 @@ jobs:
           $source = ".\dist\*"
           $username = "${{ secrets.REMOTE_USERNAME }}"
           $password = "${{ secrets.REMOTE_PASSWORD }}"
-          $host = "${{ secrets.REMOTE_HOST }}"
-          $destination = "${{ secrets.REMOTE_USERNAME }}@${{ secrets.REMOTE_HOST }}:/halcyon/vue-admin"
+          $remoteHost = "${{ secrets.REMOTE_HOST }}"
+          $destination = "${username}@${remoteHost}:/halcyon/vue-admin"
 
           # Use PSCP to deploy files
           & pscp -pw $password -r $source $destination
