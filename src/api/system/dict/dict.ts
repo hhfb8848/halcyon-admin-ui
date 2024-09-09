@@ -19,3 +19,7 @@ export const updateDict = (data?: object) => {
 export const deleteDict = (id: number) => {
   return http.request<any>("delete", baseUrlApi(`/sysDict/delete/${id}`));
 };
+// 获取全部字典以及字典数据
+export const getAllDictAndData = () => {
+  return http.request<any>("get", baseUrlApi(`${path}/getAllDictAndData`));
+};

@@ -9,12 +9,11 @@
   /* 代码块不换行 */
   white-space: pre;
   word-break: normal;
-
-  margin-right: 10px;
-  background-color: #ecf5ff !important;
   &::-webkit-scrollbar {
     height: 4px;
   }
+  margin-right: 10px;
+  background-color: #ECF5FF !important;
 }
 
 .hljs.ln-hide {
@@ -78,6 +77,8 @@
   font-weight: normal !important;
 }
 
+
+
 .hljs::-webkit-scrollbar,
 .hljsln::-webkit-scrollbar {
   height: 3px;
@@ -94,11 +95,7 @@
     border-radius: 3px;
     padding: 2px 8px;
     font-size: 11px;
-    font-family:
-      Lato,
-      PingFang SC,
-      Microsoft YaHei,
-      sans-serif;
+    font-family: Lato, PingFang SC, Microsoft YaHei, sans-serif;
     font-weight: normal;
     cursor: pointer;
     opacity: 0;
@@ -110,7 +107,7 @@
     align-items: center;
     justify-content: center;
     &:hover {
-      background: #dcdfe6;
+      background: #DCDFE6;
     }
     svg {
       color: var(--el-color-primary) !important;

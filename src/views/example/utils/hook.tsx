@@ -6,8 +6,9 @@ import { addDialog } from "@/components/ReDialog";
 import type { FormItemProps } from "../utils/types";
 import type { PaginationProps } from "@pureadmin/table";
 import { deviceDetection } from "@pureadmin/utils";
-import { listRole } from "@/api/system/role/role";
+import { getRoleList } from "@/api/system";
 import { reactive, ref, onMounted, h, toRaw } from "vue";
+
 export function useDict() {
   const form = reactive({
     name: "",
@@ -138,7 +139,7 @@ export function useDict() {
 
   async function onSearch() {
     loading.value = true;
-    const { data } = await listRole(toRaw(form));
+    const { data } = await getRoleList(toRaw(form));
     dataList.value = data.list;
     pagination.total = data.total;
     pagination.pageSize = data.pageSize;

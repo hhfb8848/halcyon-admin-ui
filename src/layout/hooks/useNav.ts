@@ -18,7 +18,7 @@ import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
 import { removeBackstageConfig } from "@/config";
 const errorInfo =
   "The current routing configuration is incorrect, please check the configuration";
-
+import { useDictStoreHook } from "@/store/modules/dict";
 export function useNav() {
   const route = useRoute();
   const pureApp = useAppStoreHook();
@@ -88,6 +88,8 @@ export function useNav() {
       removeBackstageConfig();
       onReset();
     }, 100);
+    // 清除字典数据
+    useDictStoreHook().clearDict();
     // removeBackstageConfig();
     // onReset();
   }

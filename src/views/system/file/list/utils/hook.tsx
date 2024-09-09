@@ -264,7 +264,6 @@ export function useFileList() {
   }
 
   onMounted(() => {
-    console.log("跳转文件管理页面");
     onSearch();
   });
 
