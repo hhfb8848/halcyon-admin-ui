@@ -1,10 +1,10 @@
 import { useDictStoreHook } from "@/store/modules/dict";
 import type { dictDataType } from "@/store/modules/dict";
 export enum DictCode {
-  // ========== IOT 模块 ==========
-
-  // 设备类型
-  DEVICE_TYPE = "device_type"
+  // 操作业务类型
+  OPER_BUSINESS_TYPE = "oper_business_type",
+  // 操作人
+  OPER_OPERATOR_TYPE = "oper_operator_type"
 }
 
 /**
