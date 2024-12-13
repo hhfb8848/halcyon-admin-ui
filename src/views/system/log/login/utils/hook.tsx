@@ -86,8 +86,8 @@ export function useLoginLog() {
       label: "登录时间",
       prop: "loginTime",
       showOverflowTooltip: true,
-      formatter: ({ createTime }) =>
-        dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
+      formatter: ({ loginTime }) =>
+        dayjs(loginTime).format("YYYY-MM-DD HH:mm:ss")
     }
   ];
   function handleSizeChange(val: number) {

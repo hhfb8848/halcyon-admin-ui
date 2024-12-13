@@ -98,8 +98,7 @@ export function useOperLog() {
       label: "操作时间",
       prop: "operTime",
       showOverflowTooltip: true,
-      formatter: ({ createTime }) =>
-        dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")
+      formatter: ({ operTime }) => dayjs(operTime).format("YYYY-MM-DD HH:mm:ss")
     },
     {
       label: "操作",
